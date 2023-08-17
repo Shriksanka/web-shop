@@ -1,7 +1,7 @@
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
-from app.states import AddCity, AddQuantity, AddGenre, AddSubgenre
+from app.states import AddCity, AddQuantity, AddGenre, AddSubgenre, AddItem
 from app import keyboards as kb
 from app import database as db
 from dotenv import load_dotenv
@@ -139,12 +139,82 @@ async def process_genre_choice(callback_query: types.CallbackQuery, state: FSMCo
 
 
 @dp.callback_query_handler(text="add_item")
-async def add_city(callback_query: types.CallbackQuery):
-    await callback_query.answer("Добавить товар")
+async def add_item(callback_query: types.CallbackQuery):
+    await callback_query.answer("Отправьте фото товара:")
+    await AddItem.WaitingForPhoto.set()
+
+
+@dp.message_handler(content_types=['photo'], state=AddItem.WaitingForPhoto)
+async def add_item_photo(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['photo'] = message.photo[0].file_id
+
+    await AddItem.next()
+    await message.answer("Отправьте локацию товара")
+
+
+@dp.message_handler(state=AddItem.WaitingForLocation)
+async def add_item_location(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['location'] = message.text
+
+    await AddItem.next()
+    city_inline_menu = await kb.build_city_inline_menu()
+    await message.answer("Выбери город", reply_markup=city_inline_menu)
+
+
+@dp.callback_query_handler(state=AddItem.WaitingForCity)
+async def process_city_choice(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['city_id'] = callback_query.data
+
+    await AddItem.next()
+    quantity_inline_menu = await kb.build_quantity_inline_menu()
+    await callback_query.answer('Выбери количество')
+    await callback_query.message.edit_reply_markup(reply_markup=quantity_inline_menu)
+
+
+@dp.callback_query_handler(state=AddItem.WaitingForQuantity)
+async def process_quantity_choice(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['quantity_id'] = callback_query.data
+
+    await AddItem.next()
+    genre_inline_menu = await kb.build_genre_inline_menu()
+    await callback_query.answer('Выбери жанр')
+    await callback_query.message.edit_reply_markup(reply_markup=genre_inline_menu)
+
+
+@dp.callback_query_handler(state=AddItem.WaitingForGenre)
+async def process_genre_choice(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['genre_id'] = callback_query.data
+
+    await AddItem.next()
+    subgenre_inline_menu = await kb.build_subgenre_inline_menu()
+    await callback_query.answer('Выбери поджанр')
+    await callback_query.message.edit_reply_markup(reply_markup=subgenre_inline_menu)
+
+
+@dp.callback_query_handler(state=AddItem.WaitingForSubgenre)
+async def process_subgenre_choice(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['subgenre_id'] = callback_query.data
+        await db.add_item(
+            data['photo'],
+            data['location'],
+            data['city_id'],
+            data['quantity_id'],
+            data['genre_id'],
+            data['subgenre_id']
+        )
+    await state.finish()
+    await callback_query.answer('Предмет добавлен!')
+
 
 
 @dp.callback_query_handler(text="view_item")
-async def add_city(callback_query: types.CallbackQuery):
+async def view_item(callback_query: types.CallbackQuery):
     await callback_query.answer("Просмотр товара")
 
 if __name__ == '__main__':

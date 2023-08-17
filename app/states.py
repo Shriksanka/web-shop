@@ -18,3 +18,12 @@ class AddSubgenre(StatesGroup):
     WaitingForSubgenreDescription = State()
     WaitingForSubgenrePhoto = State()
     WaitingForGenreChoice = State()
+
+
+class AddItem(StatesGroup):
+    WaitingForPhoto = State()
+    WaitingForLocation = State()
+    WaitingForCity = State()
+    WaitingForQuantity = State()
+    WaitingForGenre = State()
+    WaitingForSubgenre = State()

@@ -70,10 +70,19 @@ async def add_genre(genre_name):
 
 
 async def add_subgenre(name, description, photo, genre_id):
-    print("Adding subgenre:", name, description, photo, genre_id)
     cur.execute(
         "INSERT INTO subgenre (name, description, photo, id_genre) VALUES (?, ?, ?, ?)",
         (name, description, photo, genre_id)
+    )
+    db.commit()
+
+
+async def add_item(photo, location, city_id, quantity_id, genre_id, subgenre_id):
+    item_uuid = str(uuid.uuid4())
+    cur.execute(
+        "INSERT INTO items (uuid, photo, location, id_city, id_quantity, id_genre, id_subgenre) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (item_uuid, photo, location, city_id, quantity_id, genre_id, subgenre_id)
     )
     db.commit()
 
@@ -82,3 +91,21 @@ async def get_all_genres():
     cur.execute("SELECT * FROM genre")
     genres = cur.fetchall()
     return genres
+
+
+async def get_all_cities():
+    cur.execute("SELECT * FROM city")
+    cities = cur.fetchall()
+    return cities
+
+
+async def get_all_quantities():
+    cur.execute("SELECT * FROM quantity")
+    quantities = cur.fetchall()
+    return quantities
+
+
+async def get_all_subgenres():
+    cur.execute("SELECT * FROM subgenre")
+    subgenres = cur.fetchall()
+    return subgenres
