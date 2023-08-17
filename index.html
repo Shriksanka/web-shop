@@ -38,6 +38,11 @@
             margin: 30px auto;
         }
 
+        p {
+            width: 350px;
+            margin: 0 auto;
+        }
+
         button {
             border: 0;
             border-radius: 5px;
@@ -108,18 +113,6 @@
             let name = document.getElementById("user_name").value
             let email = document.getElementById("user_email").value
             let phone = document.getElementById("user_phone").value
-            if (name.length < 5) {
-                document.getElementById("error").innerText = 'Ошибка в имени';
-                return;
-            }
-            if (email.length < 5) {
-                document.getElementById("user_email").innerText = 'Ошибка в email';
-                return;
-            }
-            if (phone.length < 5) {
-                document.getElementById("user_phone").innerText = 'Ошибка в номере телефона';
-                return;
-            }
 
             let data = {
                 name: name,
