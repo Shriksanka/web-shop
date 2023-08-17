@@ -11,8 +11,8 @@ async def on_startup(_):
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    markup = types.ReplyKeyboardMarkup()
-    markup.add(types.KeyboardButton('Открыть веб страницу', web_app=WebAppInfo(url='https://shriksanka.github.io/web-shop/')))
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton('Открыть веб страницу', web_app=WebAppInfo(url='https://shriksanka.github.io/web-shop/')))
     await message.answer('Привет мой друг', reply_markup=markup)
 
 
