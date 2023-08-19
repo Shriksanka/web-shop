@@ -1,8 +1,11 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
+const path = require('path');
 
 const app = express();
-const db = new sqlite3.Database('tg.db');
+const PORT = process.env.PORT || 3000; // Используйте переменную окружения PORT для порта
+
+const db = new sqlite3.Database(path.join(__dirname, 'tg.db')); // Используйте абсолютный путь к базе данных
 
 app.get('/city', (req, res) => {
     db.all('SELECT name FROM city', (err, rows) => {
@@ -14,6 +17,6 @@ app.get('/city', (req, res) => {
     });
 });
 
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
