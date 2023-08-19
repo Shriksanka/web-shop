@@ -22,6 +22,7 @@ app.get('/city', (req, res) => {
     pool.query('SELECT name FROM city', (err, result) => {
         if (err) {
             res.status(500).json({error: 'Database error'});
+            return;
         }
         res.json(result.rows);
     });

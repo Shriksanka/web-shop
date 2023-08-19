@@ -90,32 +90,6 @@
     <div id="city-buttons"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // Обработчик нажатия на кнопку
-        function handleCityButtonClick(cityName) {
-            const dataToSend = {
-                cityName: cityName
-            };
-
-            fetch('/send-data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(dataToSend)
-            })
-            .then(response => response.json())
-            .then(result => {
-                console.log('Ответ сервера:', result);
-            })
-            .catch(error => {
-                console.error('Ошибка при отправке данных:', error);
-            });
-        }
-        
-        
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
         // Загрузка списка городов при загрузке страницы
         fetch('/city')
             .then(response => response.json())
@@ -134,10 +108,32 @@
                 console.error('Ошибка при получении списка городов:', error);
             });
 
+        // Обработчик нажатия на кнопку
+        function handleCityButtonClick(cityName) {
+            const dataToSend = {
+                cityName: cityName
+            };
 
+            fetch('/send-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dataToSend)
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log('Ответ сервера:', result);
+            })
+                .catch(error => {
+                    console.error('Ошибка при отправке данных:', error);
+            });
+        }
+
+        let tg = window.Telegram.WebApp;
+        tg.expand();
         
         tg.sendData(JSON.stringify(data));
-
         tg.close();
     </script>
 
