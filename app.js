@@ -1,11 +1,22 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
+const cors = requier('cors'); // Добавляем поддержку CORS
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Используйте переменную окружения PORT для порта
 
 const db = new sqlite3.Database(path.join(__dirname, 'tg.db')); // Используйте абсолютный путь к базе данных
+
+
+app.use(cors()); // Разрешаем CORS для всех запросов
+
+
+// Обработчик GET-запроса для главной страницы
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 
 app.get('/city', (req, res) => {
     db.all('SELECT name FROM city', (err, rows) => {
@@ -16,6 +27,14 @@ app.get('/city', (req, res) => {
         res.json(rows);
     });
 });
+
+
+app.post('/send-data', express.json(), (req, res) => {
+    const receivedData = req.body;
+
+    res.json({message: 'Данные успешно обработаны'})
+})
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
