@@ -3,11 +3,11 @@ from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeybo
 from app import database as db
 
 link_web = ReplyKeyboardMarkup()
-link_web.add(KeyboardButton('Открыть веб страницу', web_app=WebAppInfo(url='https://shriksanka.github.io/web-shop/')))
+link_web.add(KeyboardButton('Открыть веб страницу', web_app=WebAppInfo(url='https://telegram-shop-web-app-7f96b757ecd0.herokuapp.com/')))
 
 link_web_with_admin = ReplyKeyboardMarkup()
 link_web_with_admin.add(
-    KeyboardButton('Открыть веб страницу', web_app=WebAppInfo(url='https://shriksanka.github.io/web-shop/')))
+    KeyboardButton('Открыть веб страницу', web_app=WebAppInfo(url='https://telegram-shop-web-app-7f96b757ecd0.herokuapp.com/')))
 link_web_with_admin.add(KeyboardButton('Админ-панель'))
 
 admin_inline_menu = InlineKeyboardMarkup(row_width=2)
