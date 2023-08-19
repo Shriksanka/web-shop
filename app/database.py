@@ -109,3 +109,79 @@ async def get_all_subgenres():
     cur.execute("SELECT * FROM subgenre")
     subgenres = cur.fetchall()
     return subgenres
+
+
+async def get_all_items():
+    cur.execute("SELECT * FROM items")
+    items = cur.fetchall()
+    return items
+
+
+async def get_item_by_id(item_id):
+    cur.execute("SELECT * FROM items WHERE item_id = ?", (item_id,))
+    item = cur.fetchone()
+    return item
+
+
+async def get_genre_by_id(genre_id):
+    cur.execute("SELECT * FROM genre WHERE genre_id = ?", (genre_id,))
+    genre = cur.fetchone()
+    return genre
+
+
+async def get_subgenre_by_id(subgenre_id):
+    cur.execute("SELECT * FROM subgenre WHERE subgenre_id = ?", (subgenre_id,))
+    subgenre = cur.fetchone()
+    return subgenre
+
+
+async def get_items_by_parameters(city_id, genre_id, subgenre_id, quantity_id):
+    cur.execute("SELECT * FROM items WHERE id_city = ? AND id_genre =  AND id_subgenre = ? AND id_quantity = ?",
+                (city_id, genre_id, subgenre_id, quantity_id))
+    items = cur.fetchall()
+    return items
+
+
+async def get_available_genres_by_city(city_id):
+    cur.execute(
+        "SELECT DISTINCT g.genre_id, g.name "
+        "FROM genre AS g "
+        "JOIN subgenre AS s ON g.genre_id = s.id_genre "
+        "JOIN items AS i ON s.subgenre_id = i.id_subgenre "
+        "WHERE i.id_city = ?",
+        (city_id, )
+    )
+    genres = cur.fetchall()
+    return genres
+
+
+async def get_available_subgenres_by_genre_and_city(genre_id, city_id):
+    cur.execute(
+        "SELECT subgenre_id, name FROM subgenre "
+        "WHERE id_genre = ? AND subgenre_id IN (SELECT id_subgenre FROM items WHERE id_city = ?)",
+        (genre_id, city_id)
+    )
+    subgenres = cur.fetchall()
+    return subgenres
+
+
+async def get_available_quantities_by_subgenre_genre_and_city(subgenre_id, genre_id, city_id):
+    cur.execute(
+        "SELECT DISTINCT quantity.value, quantity.quantity_id "
+        "FROM items "
+        "INNER JOIN quantity ON items.id_quantity = quantity.quantity_id "
+        "WHERE items.id_genre = ? AND items.id_subgenre = ? AND items.id_city = ?",
+        (genre_id, subgenre_id, city_id)
+    )
+    quantities = cur.fetchall()
+    return quantities
+
+
+async def get_items_by_params(city_id, genre_id, subgenre_id, quantity_id):
+    cur.execute(
+        "SELECT * FROM items "
+        "WHERE id_city = ? AND id_genre = ? AND id_subgenre = ? AND id_quantity = ?",
+        (city_id, genre_id, subgenre_id, quantity_id)
+    )
+    items = cur.fetchall()
+    return items

@@ -1,7 +1,8 @@
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
-from app.states import AddCity, AddQuantity, AddGenre, AddSubgenre, AddItem
+from app.states import AddCity, AddQuantity, AddGenre, AddSubgenre, AddItem, ViewItem
 from app import keyboards as kb
 from app import database as db
 from dotenv import load_dotenv
@@ -212,10 +213,104 @@ async def process_subgenre_choice(callback_query: types.CallbackQuery, state: FS
     await callback_query.answer('Предмет добавлен!')
 
 
-
 @dp.callback_query_handler(text="view_item")
-async def view_item(callback_query: types.CallbackQuery):
-    await callback_query.answer("Просмотр товара")
+async def view_city(callback_query: types.CallbackQuery):
+    cities_inline_menu = await kb.build_city_inline_menu()
+    await callback_query.answer("Выберите город")
+    await callback_query.message.edit_reply_markup(reply_markup=cities_inline_menu)
+    await ViewItem.WaitingForCity.set()
+
+
+@dp.callback_query_handler(state=ViewItem.WaitingForCity)
+async def process_city_choice_view(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['city_id'] = callback_query.data
+
+    await ViewItem.next()
+    available_genres = await db.get_available_genres_by_city(data['city_id'])
+    genre_inline_menu = InlineKeyboardMarkup(row_width=2)
+    for genre in available_genres:
+        genre_inline_menu.insert(
+            InlineKeyboardButton(genre['name'], callback_data=f"view_genre_{genre['genre_id']}")
+        )
+    await callback_query.answer("Выберите жанр")
+    await callback_query.message.edit_reply_markup(reply_markup=genre_inline_menu)
+
+
+@dp.callback_query_handler(lambda callback_query: callback_query.data.startswith("view_genre_"),
+                           state=ViewItem.WaitingForGenre)
+async def process_genre_choice_view(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['genre_id'] = callback_query.data.split("_")[2]
+
+    await ViewItem.next()
+    available_subgenres = await db.get_available_subgenres_by_genre_and_city(data['genre_id'], data['city_id'])
+    subgenre_inline_menu = InlineKeyboardMarkup(row_width=2)
+    for subgenre in available_subgenres:
+        subgenre_inline_menu.insert(
+            InlineKeyboardButton(subgenre['name'], callback_data=f"view_subgenre_{subgenre['subgenre_id']}")
+        )
+    await callback_query.answer("Выберите поджанр")
+    await callback_query.message.edit_reply_markup(reply_markup=subgenre_inline_menu)
+
+
+@dp.callback_query_handler(lambda callback_query: callback_query.data.startswith("view_subgenre_"),
+                           state=ViewItem.WaitingForSubgenre)
+async def process_subgenre_choice_view(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['subgenre_id'] = callback_query.data.split("_")[2]
+
+    await ViewItem.next()
+
+    subgenre_card = await db.get_subgenre_by_id(data['subgenre_id'])
+    await callback_query.message.answer_photo(photo=subgenre_card['photo'])
+    await callback_query.message.answer(f"Имя: {subgenre_card['name']}")
+    await callback_query.message.answer(f"Описание: {subgenre_card['description']}")
+
+    available_quantities = await db.get_available_quantities_by_subgenre_genre_and_city(data['subgenre_id'],
+                                                                                        data['genre_id'],
+                                                                                        data['city_id'])
+    quantity_inline_menu = InlineKeyboardMarkup(row_width=2)
+    for quantity in available_quantities:
+        quantity_inline_menu.insert(
+            InlineKeyboardButton(quantity['value'], callback_data=f"view_quantity_{quantity['quantity_id']}")
+        )
+
+    await callback_query.answer("Выберите количество")
+    await callback_query.message.edit_reply_markup(reply_markup=quantity_inline_menu)
+
+
+@dp.callback_query_handler(lambda callback_query: callback_query.data.startswith("view_quantity_"),
+                           state=ViewItem.WaitingForQuantity)
+async def process_quantity_choice_view(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['quantity_id'] = callback_query.data.split("_")[2]
+
+    await ViewItem.next()
+    available_items = await db.get_items_by_params(data['city_id'], data['genre_id'], data['subgenre_id'],
+                                                   data['quantity_id'])
+    items_inline_menu = InlineKeyboardMarkup(row_width=2)
+    for item in available_items:
+        items_inline_menu.insert(
+            InlineKeyboardButton(f"Item ID: {item['item_id']} | UUID: {item['uuid']}",
+                                 callback_data=f"view_item_{item['item_id']}")
+        )
+    await callback_query.answer("Выберите предмет из списка")
+    await callback_query.message.edit_reply_markup(reply_markup=items_inline_menu)
+
+
+@dp.callback_query_handler(lambda callback_query: callback_query.data.startswith("view_item_"),
+                           state=ViewItem.WaitingForItem)
+async def process_item_choice_view(callback_query: types.CallbackQuery, state: FSMContext):
+    item_id = callback_query.data.split("_")[2]
+    item = await db.get_item_by_id(item_id)
+
+    await callback_query.message.answer_photo(photo=item['photo'])
+    await callback_query.message.answer(f"Location: {item['location']}")
+    await callback_query.answer('Просмотрен предмет')
+
+    await state.finish()
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, on_startup=on_startup, skip_updates=True)

@@ -86,43 +86,38 @@
         <h1>Онлайн магазин</h1>
         <img src="https://cdn-icons-png.flaticon.com/512/3595/3595455.png">
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-        <button id="buy">Купить</button>
     </div>
-    <form id="form">
-        <input type="text" placeholder="Имя" id="user_name">
-        <input type="text" placeholder="Email" id="user_email">
-        <input type="text" placeholder="Телефон" id="user_phone">
-        <div id="error"></div>
-        <button id="order">Оформить</button>
-    </form>
+    <div id="city-buttons"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         let tg = window.Telegram.WebApp;
-        let buy = document.getElementById("buy");
-        let order = document.getElementById("order");
         tg.expand();
 
-        buy.addEventListener("click", () => {
-            document.getElementById("main").style.display = "none";
-            document.getElementById("form").style.display = "block";
-            document.getElementById("user_name").value = tg.initDataUnsafe.user.first_name + " " + tg.initDataUnsafe.user.last_name;
-        });
+        // Загрузка списка городов при загрузке страницы
+        fetch('/city')
+            .then(response => response.json())
+            .then(cities => {
+                const cityButtonsDiv = document.getElementById('city-buttons');
+                cities.forEach(city => {
+                    const cityButton = document.createElement('button');
+                    cityButton.textContent = city.name;
+                    cityButton.addEventListener('click', () => {
+                        // Действия при выборе города
+                        console.log('Выбран город: ${city.name}');
+                        // Теперь вы можете передать выбранный город обратно на сервер
+                    });
+                    cityButtonsDiv.appendChild(cityButton);
+                });
+            })
+            .catch(error => {
+                console.error('Ошибка при получении списка городов:', error);
+            });
 
-        order.addEventListener("click", () => {
-            document.getElementById("error").innerText = '';
-            let name = document.getElementById("user_name").value
-            let email = document.getElementById("user_email").value
-            let phone = document.getElementById("user_phone").value
 
-            let data = {
-                name: name,
-                email: email,
-                phone: phone
-            }
-            tg.sendData(JSON.stringify(data));
+        
+        tg.sendData(JSON.stringify(data));
 
-            tg.close();
-        });
+        tg.close();
     </script>
 
 </body>

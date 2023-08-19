@@ -27,3 +27,11 @@ class AddItem(StatesGroup):
     WaitingForQuantity = State()
     WaitingForGenre = State()
     WaitingForSubgenre = State()
+
+
+class ViewItem(StatesGroup):
+    WaitingForCity = State()
+    WaitingForGenre = State()
+    WaitingForSubgenre = State()
+    WaitingForQuantity = State()
+    WaitingForItem = State()
