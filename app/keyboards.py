@@ -26,7 +26,7 @@ async def build_genre_inline_menu():
     genres = await db.get_all_genres()
     for genre in genres:
         genre_inline_menu.insert(
-            InlineKeyboardButton(genre['name'], callback_data=genre['genre_id'])
+            InlineKeyboardButton(genre[1], callback_data=str(genre[0]))
         )
     return genre_inline_menu
 
@@ -36,7 +36,7 @@ async def build_city_inline_menu():
     cities = await db.get_all_cities()
     for city in cities:
         city_inline_menu.insert(
-            InlineKeyboardButton(city['name'], callback_data=city['city_id'])
+            InlineKeyboardButton(city[1], callback_data=str(city[0]))
         )
     return city_inline_menu
 
@@ -46,7 +46,7 @@ async def build_subgenre_inline_menu():
     subgenres = await db.get_all_subgenres()
     for subgenre in subgenres:
         subgenre_inline_menu.insert(
-            InlineKeyboardButton(subgenre['name'], callback_data=subgenre['subgenre_id'])
+            InlineKeyboardButton(subgenre[1], callback_data=str(subgenre[0]))
         )
     return subgenre_inline_menu
 
@@ -56,6 +56,6 @@ async def build_quantity_inline_menu():
     quantities = await db.get_all_quantities()
     for quantity in quantities:
         quantity_inline_menu.insert(
-            InlineKeyboardButton(quantity['value'], callback_data=quantity['quantity_id'])
+            InlineKeyboardButton(quantity[1], callback_data=str(quantity[0]))
         )
     return quantity_inline_menu

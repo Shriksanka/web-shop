@@ -231,7 +231,7 @@ async def process_city_choice_view(callback_query: types.CallbackQuery, state: F
     genre_inline_menu = InlineKeyboardMarkup(row_width=2)
     for genre in available_genres:
         genre_inline_menu.insert(
-            InlineKeyboardButton(genre['name'], callback_data=f"view_genre_{genre['genre_id']}")
+            InlineKeyboardButton(genre[1], callback_data=f"view_genre_{genre[0]}")
         )
     await callback_query.answer("Выберите жанр")
     await callback_query.message.edit_reply_markup(reply_markup=genre_inline_menu)
@@ -248,7 +248,7 @@ async def process_genre_choice_view(callback_query: types.CallbackQuery, state: 
     subgenre_inline_menu = InlineKeyboardMarkup(row_width=2)
     for subgenre in available_subgenres:
         subgenre_inline_menu.insert(
-            InlineKeyboardButton(subgenre['name'], callback_data=f"view_subgenre_{subgenre['subgenre_id']}")
+            InlineKeyboardButton(subgenre[1], callback_data=f"view_subgenre_{subgenre[0]}")
         )
     await callback_query.answer("Выберите поджанр")
     await callback_query.message.edit_reply_markup(reply_markup=subgenre_inline_menu)
@@ -263,9 +263,9 @@ async def process_subgenre_choice_view(callback_query: types.CallbackQuery, stat
     await ViewItem.next()
 
     subgenre_card = await db.get_subgenre_by_id(data['subgenre_id'])
-    await callback_query.message.answer_photo(photo=subgenre_card['photo'])
-    await callback_query.message.answer(f"Имя: {subgenre_card['name']}")
-    await callback_query.message.answer(f"Описание: {subgenre_card['description']}")
+    await callback_query.message.answer_photo(photo=subgenre_card[3])
+    await callback_query.message.answer(f"Имя: {subgenre_card[1]}")
+    await callback_query.message.answer(f"Описание: {subgenre_card[2]}")
 
     available_quantities = await db.get_available_quantities_by_subgenre_genre_and_city(data['subgenre_id'],
                                                                                         data['genre_id'],
@@ -273,7 +273,7 @@ async def process_subgenre_choice_view(callback_query: types.CallbackQuery, stat
     quantity_inline_menu = InlineKeyboardMarkup(row_width=2)
     for quantity in available_quantities:
         quantity_inline_menu.insert(
-            InlineKeyboardButton(quantity['value'], callback_data=f"view_quantity_{quantity['quantity_id']}")
+            InlineKeyboardButton(quantity[1], callback_data=f"view_quantity_{quantity[0]}")
         )
 
     await callback_query.answer("Выберите количество")
@@ -292,8 +292,8 @@ async def process_quantity_choice_view(callback_query: types.CallbackQuery, stat
     items_inline_menu = InlineKeyboardMarkup(row_width=2)
     for item in available_items:
         items_inline_menu.insert(
-            InlineKeyboardButton(f"Item ID: {item['item_id']} | UUID: {item['uuid']}",
-                                 callback_data=f"view_item_{item['item_id']}")
+            InlineKeyboardButton(f"Item ID: {item[0]} | UUID: {item[1]}",
+                                 callback_data=f"view_item_{item[0]}")
         )
     await callback_query.answer("Выберите предмет из списка")
     await callback_query.message.edit_reply_markup(reply_markup=items_inline_menu)
@@ -305,8 +305,8 @@ async def process_item_choice_view(callback_query: types.CallbackQuery, state: F
     item_id = callback_query.data.split("_")[2]
     item = await db.get_item_by_id(item_id)
 
-    await callback_query.message.answer_photo(photo=item['photo'])
-    await callback_query.message.answer(f"Location: {item['location']}")
+    await callback_query.message.answer_photo(photo=item[2])
+    await callback_query.message.answer(f"Location: {item[3]}")
     await callback_query.answer('Просмотрен предмет')
 
     await state.finish()
