@@ -1,7 +1,7 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
-const cors = requier('cors'); // Добавляем поддержку CORS
 const path = require('path');
+const cors = require('cors'); // Добавляем поддержку CORS
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Используйте переменную окружения PORT для порта
@@ -12,12 +12,6 @@ const db = new sqlite3.Database(path.join(__dirname, 'tg.db')); // Исполь�
 app.use(cors()); // Разрешаем CORS для всех запросов
 
 
-// Обработчик GET-запроса для главной страницы
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-
 app.get('/city', (req, res) => {
     db.all('SELECT name FROM city', (err, rows) => {
         if (err) {
@@ -26,6 +20,12 @@ app.get('/city', (req, res) => {
         }
         res.json(rows);
     });
+});
+
+
+// Обработчик GET-запроса для главной страницы
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 
