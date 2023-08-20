@@ -43,6 +43,32 @@
             margin: 0 auto;
         }
 
+        .city-button {
+            display: block;
+            border: 0;
+            border-radius: 10px;
+            margin-top: 20px;
+            padding: 10px;
+            width: 200px;
+            font-size: 18px;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: all 300ms ease;
+            background-color: var(--tg-theme-button-text-color);
+            color: var(--tg-theme-button-color);
+        }
+
+        .city-button:hover {
+            background-color: var(--tg-theme-secondary-bg-color);
+        }
+
+        .city-emoji {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
         button {
             border: 0;
             border-radius: 5px;
@@ -59,25 +85,6 @@
 
         button:hover {
             background: var(--tg-theme-secondary-bg-color);
-        }
-
-        #form {
-            display: none;
-            text-align: center;
-        }
-
-        input {
-            width: 90%;
-            outline: none;
-            margin: 10px 5%;
-            padding: 15px 10px;
-            font-size: 14px;
-            border: 2px solid silver;
-            border-radius: 5px;
-        }
-
-        input:focus {
-            border-color: #db5d5d;
         }
     </style>
 </head>
@@ -97,10 +104,10 @@
                 const cityButtonsDiv = document.getElementById('city-buttons');
                 cities.forEach(city => {
                     const cityButton = document.createElement('button');
-                    cityButton.textContent = city.name;
-                    cityButton.addEventListener('click', () => {
-                        handleCityButtonClick(city.name);
-                    });
+                    cityButton.classList.add('city-button');
+                    const emoji = city.name.charAt(0); // Получаем первую букву города
+                    const cityName = city.name.slice(1); // Получаем название города без первой буквы
+                    cityButton.innerHTML = `<span class="city-emoji">${emoji}</span>${cityName}`;
                     cityButtonsDiv.appendChild(cityButton);
                 });
             })
