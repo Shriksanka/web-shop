@@ -78,9 +78,10 @@
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
     </div>
     <div id="city-buttons" class="city-buttons"></div>
-    <div id="genres-list"></div>
+    <div id="genres-list" class="city-buttons"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
+
         // Загрузка списка городов при загрузке страницы
         fetch('/city')
             .then(response => response.json())
@@ -91,7 +92,7 @@
                     cityButton.textContent = city.name;
                     cityButton.classList.add('city-button');
                     cityButton.addEventListener('click', () => {
-                        handleCityButtonClick(city.name);
+                        handleCityButtonClick(city.city_id);
                     });
                     cityButtonsDiv.appendChild(cityButton);
                 });
@@ -101,21 +102,26 @@
         });
 
 
-        function loadAvailableGenres(cityId) {
-            fetch(`/city/${cityId}/genres`)
-                .then(response => response.json())
-                .then(genres => {
-                    const genresListDiv = document.getElementById('genres-lsit');
-                    genresListDiv.innerHTML = ''; // Очищаем предыдущий список жанров
-                    genres.forEach(genre => {
-                        const genreElement = document.createElement('p');
-                        genreElement.textContent = genre.name;
-                        genresListDiv.appendChild(genreElement);
+        async function loadAvailableGenres(cityId) {
+            try {
+                const response = await fetch(`/city/${cityId}/genres`);
+                const availableGenres = await response.json();
+
+                const genresListDiv = document.getElementById('genres-list');
+                genresListDiv.innerHTML = '';
+
+                availableGenres.forEach(genre => {
+                    const genreButton = document.createElement('button');
+                    genreButton.textContent = genre.name;
+                    genreButton.classList.add('city-button');
+                    genreButton.addEventListener('click', () => {
+                        handleGenreButtonClick(genre);
                     });
-                })
-                .catch(error => {
-                    console.error('Ошибка при получении доступных жанров:', error);
+                    genresListDiv.appendChild(genreButton);
                 });
+            } catch (error) {
+                console.error('Ошибка при получении доступных жанров:', error);
+            }
         }
 
 
@@ -137,16 +143,23 @@
                 console.log('Ответ сервера:', result);
                 loadAvailableGenres(cityId); // Загружаем доступные жанры по городу
             })
-                .catch(error => {
-                    console.error('Ошибка при отправке данных:', error);
+            .catch(error => {
+                console.error('Ошибка при отправке данных:', error);
             });
         }
+
+
+        function handleGenreButtonClick(genre) {
+
+        }
+
 
         let tg = window.Telegram.WebApp;
         tg.expand();
         
         tg.sendData(JSON.stringify(data));
         tg.close();
+
     </script>
 
 </body>

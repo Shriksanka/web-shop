@@ -14,9 +14,6 @@ const pool = new Pool({
     },
 });
 
-const {
-    get_available_genres_by_city
-} = require('./app/database');
 
 app.use(cors()); // Разрешаем CORS для всех запросов
 
@@ -35,12 +32,14 @@ app.get('/city', (req, res) => {
 app.get('/city/:cityId/genres', async (req, res) => {
     const cityId = req.params.cityId;
 
-    try {
-        const genres = await get_available_genres_by_city(cityId);
-        res.json(genres);
-    } catch (error) {
-        res.status(500).json({error: 'Database error'});
-    }
+    pool.query('SELECT g.name FROM genres g ' +
+               'JOIN city_genres cg ON g.genre_id = cg.genre_id ' +
+               'WHERE cg.city_id = $1', [cityId], (err, result) => {
+        if (err) {
+            res.status(500).json({ error: 'Database error' });
+        }
+        res.json(result.rows);
+    });
 });
 
 
