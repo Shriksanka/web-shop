@@ -188,7 +188,6 @@
 
 import psycopg2
 import os
-import uuid
 
 
 async def db_start():
