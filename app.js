@@ -16,7 +16,7 @@ const pool = new Pool({
 
 const {
     get_available_genres_by_city
-} = require('./app/database.py');
+} = require('./app/database');
 
 app.use(cors()); // Разрешаем CORS для всех запросов
 
