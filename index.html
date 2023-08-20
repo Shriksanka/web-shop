@@ -69,6 +69,10 @@
         .city-button:hover {
             background-color: var(--tg-theme-secondary-bg-color);
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -103,6 +107,13 @@
 
 
         function handleCityButtonClick(cityId) {
+            // Скрыть кнопки городов
+            const cityButtonsDiv = document.getElementById('city-buttons');
+            cityButtonsDiv.classList.add('hidden');
+
+            // Показывать кнопки жанров
+            const genresListDiv = document.getElementById('genres-list');
+            genresListDiv.classList.remove('hidden');
             loadAvailableGenres(cityId);
         }
 
