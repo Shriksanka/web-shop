@@ -120,13 +120,16 @@
 
         async function loadAvailableGenres(cityId) {
             try {
+                console.log(`Fetching genres for city ${cityId}`);
                 const response = await fetch(`/city/${cityId}/genres`);
+                console.log(`Response received for genres of city ${cityId}`)
                 const availableGenres = await response.json();
 
                 const genresListDiv = document.getElementById('genres-list');
                 genresListDiv.innerHTML = '';
 
                 availableGenres.forEach(genre => {
+                    console.log('Adding genre button:', genre.name);
                     const genreButton = document.createElement('button');
                     genreButton.textContent = genre.name;
                     genreButton.classList.add('city-button');
@@ -142,7 +145,7 @@
 
 
         function handleGenreButtonClick(genre) {
-
+            console.log('Genre button clicked:', genre.name);
         }
 
 
