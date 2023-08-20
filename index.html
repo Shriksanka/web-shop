@@ -96,7 +96,7 @@
                     cityButton.textContent = city.name;
                     cityButton.classList.add('city-button');
                     cityButton.addEventListener('click', () => {
-                        handleCityButtonClick(city.city_id);
+                        handleCityButtonClick(city.cityId);
                     });
                     cityButtonsDiv.appendChild(cityButton);
                 });
@@ -152,8 +152,8 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         
-        tg.sendData(JSON.stringify(data));
-        tg.close();
+        // tg.sendData(JSON.stringify(data));
+        // tg.close();
 
     </script>
 
