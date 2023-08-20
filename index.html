@@ -102,14 +102,41 @@
         });
 
 
-        function loadAvailableGenres(cityId) {
-            fetch(`/city/${cityId}/genres`)
+        async function loadAvailableGenres(cityId) {
+            try {
+                const response = await fetch(`/city/${cityId}/genres`);
+                const availableGenres = await response.json();
+
+                const genresListDiv = document.getElementById('genres-list');
+                genresListDiv.innerHTML = '';
+
+                availableGenres.forEach(genre => {
+                    const genreButton = document.createElement('button');
+                    genreButton.textContent = genre.name;
+                    genreButton.classList.add('city-button');
+                    genreButton.addEventListener('click', () => {
+                        handleGenreButtonClick(genre);
+                    });
+                    genresListDiv.appendChild(genreButton);
+                });
+            } catch (error) {
+                console.error('Ошибка при получении доступных жанров:', error);
+            }
+        }
+
+
+        // Обработчик нажатия на кнопку
+        function handleCityButtonClick(cityId) {
+            fetch('/city/' + cityId + '/genres')
                 .then(response => response.json())
-                .then(availableGenres => {
+                .then(genres => {
+                    const cityButtonsDiv = document.getElementById('city-buttons');
                     const genresListDiv = document.getElementById('genres-list');
+
+                    cityButtonsDiv.innerHTML = '';
                     genresListDiv.innerHTML = '';
 
-                    availableGenres.forEach(genre => {
+                    genres.forEach(genre => {
                         const genreButton = document.createElement('button');
                         genreButton.textContent = genre.name;
                         genreButton.classList.add('city-button');
@@ -120,14 +147,8 @@
                     });
                 })
                 .catch(error => {
-                    console.error('Ошибка при получении доступных жанров:', error);
+                    console.error('Ошибка при получении списка жанров:', error);
                 });
-        }
-
-
-        // Обработчик нажатия на кнопку
-        function handleCityButtonClick(cityId) {
-            loadAvailableGenres(cityId);
         }
 
 
