@@ -14,6 +14,9 @@ const pool = new Pool({
     },
 });
 
+const {
+    get_available_genres_by_city
+} = require('app/database.py');
 
 app.use(cors()); // Разрешаем CORS для всех запросов
 
@@ -26,6 +29,18 @@ app.get('/city', (req, res) => {
         }
         res.json(result.rows);
     });
+});
+
+
+app.get('/city/:cityId/genres', async (req, res) => {
+    const cityId = req.params.cityId;
+
+    try {
+        const genres = await get_available_genres_by_city(cityId);
+        res.json(genres);
+    } catch (error) {
+        res.status(500).json({error: 'Database error'});
+    }
 });
 
 

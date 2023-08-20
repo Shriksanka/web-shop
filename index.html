@@ -78,6 +78,7 @@
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
     </div>
     <div id="city-buttons" class="city-buttons"></div>
+    <div id="genres-list"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         // Загрузка списка городов при загрузке страницы
@@ -100,8 +101,26 @@
         });
 
 
+        function loadAvailableGenres(cityId) {
+            fetch(`/city/${cityId}/genres`)
+                .then(response => response.json())
+                .then(genres => {
+                    const genresListDiv = document.getElementById('genres-lsit');
+                    genresListDiv.innerHTML = ''; // Очищаем предыдущий список жанров
+                    genres.forEach(genre => {
+                        const genreElement = document.createElement('p');
+                        genreElement.textContent = genre.name;
+                        genresListDiv.appendChild(genreElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Ошибка при получении доступных жанров:', error);
+                });
+        }
+
+
         // Обработчик нажатия на кнопку
-        function handleCityButtonClick(cityName) {
+        function handleCityButtonClick(cityName, cityId) {
             const dataToSend = {
                 cityName: cityName
             };
@@ -116,6 +135,7 @@
             .then(response => response.json())
             .then(result => {
                 console.log('Ответ сервера:', result);
+                loadAvailableGenres(cityId); // Загружаем доступные жанры по городу
             })
                 .catch(error => {
                     console.error('Ошибка при отправке данных:', error);
