@@ -93,7 +93,6 @@
         <h1>Онлайн магазин</h1>
         <img src="https://cdn-icons-png.flaticon.com/512/3595/3595455.png">
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-        <button>🌍 Город</button>
     </div>
     <div id="city-buttons"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -105,16 +104,17 @@
                 const cityButtonsDiv = document.getElementById('city-buttons');
                 cities.forEach(city => {
                     const cityButton = document.createElement('button');
-                    cityButton.classList.add('city-button');
-                    const emoji = city.name.charAt(0); // Получаем первую букву города
-                    const cityName = city.name.slice(1); // Получаем название города без первой буквы
-                    cityButton.innerHTML = `<span class="city-emoji">${emoji}</span>${cityName}`;
+                    cityButton.textContent = city.name;
+                    cityButton.addEventListener('click', () => {
+                        handleCityButtonClick(city.name);
+                    });
                     cityButtonsDiv.appendChild(cityButton);
                 });
             })
-            .catch(error => {
-                console.error('Ошибка при получении списка городов:', error);
-            });
+        .catch(error => {
+            console.error('Ошибка при получении списка городов:', error);
+        });
+
 
         // Обработчик нажатия на кнопку
         function handleCityButtonClick(cityName) {
