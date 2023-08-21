@@ -166,17 +166,18 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             padding: 10px;
-            top: calc(100% + 5px);
+            top: 100%;
             left: 0;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            transform-origin: top;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
         }
 
         .subgenre-menu.show {
             display: block;
-            opacity: 1;
-            transform: translateY(0);
+            transform: scaleY(0);
         }
 
         .quantity-button {
