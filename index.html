@@ -336,12 +336,13 @@
             addSubgenreButton.textContent = '+';
             addSubgenreButton.classList.add('add-subgenre-button');
             addSubgenreButton.addEventListener('click', () => {
-                toggleSubgenreMenu(subgenreInfo.subgenre_id);
+                handleAddSubgenreButtonClick(subgenreInfo);
             });
             subgenreBlock.appendChild(addSubgenreButton);
 
             const subgenreMenu = document.createElement('div');
             subgenreMenu.classList.add('subgenre-menu');
+            subgenreMenu.dataset.subgenre = subgenreInfo.subgenre_id;
             subgenreBlock.appendChild(subgenreMenu);
 
             return subgenreBlock;
@@ -384,12 +385,6 @@
         }
 
 
-        function toggleSubgenreMenu(subgenreId) {
-            const subgenreMenu = document.querySelector(`.subgenre-menu[data-subgenre="${subgenreId}"]`);
-            subgenreMenu.classList.toggle('show');
-        }
-
-
         let selectedGenreId = null;
 
         function handleGenreButtonClick(genre) {
@@ -404,8 +399,12 @@
 
         function handleAddSubgenreButtonClick(subgenreInfo) {
             const subgenreId = subgenreInfo.subgenre_id;
-            toggleSubgenreMenu(subgenreId);
-            loadAvailableQuantities(subgenreId);
+            const subgenreMenu = document.querySelector(`.subgenre-menu[data-subgenre="${subgenreId}"]`);
+            subgenreMenu.classList.toggle('show');
+
+            if (subgenreMenu.classList.contains('show')) {
+                loadAvailableQuantities(subgenreId);
+            }
         }
 
 
