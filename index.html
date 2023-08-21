@@ -77,11 +77,45 @@
         }
 
         .emoji {
+            display: block;
             font-size: 36px;
             margin-bottom: 8px;
         }
 
         .city-name {
+            display: block;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .genre-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .genre-button {
+            display: block;
+            border: 0;
+            border-radius: 10px;
+            margin: 10px;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: all 300ms ease;
+            background-color: var(--tg-theme-button-text-color);
+            color: var(--tg-theme-button-color);
+        }
+
+        .genre-button:hover {
+            background-color: var(--tg-theme-secondary-bg-color);
+        }
+
+        .genre-name {
+            display: block;
             font-size: 16px;
             text-align: center;
         }
@@ -94,7 +128,7 @@
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
     </div>
     <div id="city-buttons" class="city-buttons"></div>
-    <div id="genres-list" class="city-buttons"></div>
+    <div id="genres-list" class="genre-buttons"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
 
@@ -155,38 +189,28 @@
             loadAvailableGenres(cityId);
         }
 
-
         async function loadAvailableGenres(cityId) {
             try {
                 console.log(`Fetching genres for city ${cityId}`);
                 const response = await fetch(`/city/${cityId}/genres`);
-                console.log(`Response received for genres of city ${cityId}`);
+                console.log(`Response received for genres of city ${cityId}`)
                 const availableGenres = await response.json();
 
                 const genresListDiv = document.getElementById('genres-list');
                 genresListDiv.innerHTML = '';
 
-                const rows = Math.ceil(availableGenres.length / 2);
-
-                for (let i = 0; i < rows; i++) {
-                    const rowContainer = document.createElement('div');
-                    rowContainer.classList.add('genre-row')
-                    genresListDiv.appendChild(rowContainer);
-
-                    for (let j = i * 2; j < (i * 2) + 2 && j < availableGenres.length; j++) {
-                        const genreButton = createGenreButton(availableGenres[j]);
-                        rowContainer.appendChild(genreButton);
-                    }
-                }
+                availableGenres.forEach(genre => {
+                    const genreButton = createGenreButton(genre);
+                    genresListDiv.appendChild(genreButton);
+                });
             } catch (error) {
                 console.error('Ошибка при получении доступных жанров:', error);
             }
         }
 
-
         function createGenreButton(genreInfo) {
             const genreButton = document.createElement('button');
-            genreButton.classList.add('city-button');
+            genreButton.classList.add('genre-button');
             genreButton.addEventListener('click', () => {
                 handleGenreButtonClick(genreInfo);
             });
@@ -202,11 +226,63 @@
 
             const genreNameSpan = document.createElement('span');
             genreNameSpan.textContent = genreNameWithoutEmoji;
-            genreNameSpan.classList.add('city-name');
+            genreNameSpan.classList.add('genre-name');
             genreButton.appendChild(genreNameSpan);
 
             return genreButton;
         }
+
+        // async function loadAvailableGenres(cityId) {
+        //     try {
+        //         console.log(`Fetching genres for city ${cityId}`);
+        //         const response = await fetch(`/city/${cityId}/genres`);
+        //         console.log(`Response received for genres of city ${cityId}`);
+        //         const availableGenres = await response.json();
+        //
+        //         const genresListDiv = document.getElementById('genres-list');
+        //         genresListDiv.innerHTML = '';
+        //
+        //         const rows = Math.ceil(availableGenres.length / 2);
+        //
+        //         for (let i = 0; i < rows; i++) {
+        //             const rowContainer = document.createElement('div');
+        //             rowContainer.classList.add('genre-row')
+        //             genresListDiv.appendChild(rowContainer);
+        //
+        //             for (let j = i * 2; j < (i * 2) + 2 && j < availableGenres.length; j++) {
+        //                 const genreButton = createGenreButton(availableGenres[j]);
+        //                 rowContainer.appendChild(genreButton);
+        //             }
+        //         }
+        //     } catch (error) {
+        //         console.error('Ошибка при получении доступных жанров:', error);
+        //     }
+        // }
+        //
+        //
+        // function createGenreButton(genreInfo) {
+        //     const genreButton = document.createElement('button');
+        //     genreButton.classList.add('genre-button');
+        //     genreButton.addEventListener('click', () => {
+        //         handleGenreButtonClick(genreInfo);
+        //     });
+        //
+        //     const emojiMatch = genreInfo.name.match(/(\p{Emoji_Presentation})/gu);
+        //     const emoji = emojiMatch ? emojiMatch[0] : '';
+        //     const genreNameWithoutEmoji = genreInfo.name.replace(/\p{Emoji_Presentation}/gu, '');
+        //
+        //     const emojiSpan = document.createElement('span');
+        //     emojiSpan.textContent = emoji;
+        //     emojiSpan.classList.add('emoji');
+        //     genreButton.appendChild(emojiSpan);
+        //
+        //     const genreNameSpan = document.createElement('span');
+        //     genreNameSpan.textContent = genreNameWithoutEmoji;
+        //     genreNameSpan.classList.add('genre-name');
+        //     genreButton.appendChild(genreNameSpan);
+        //
+        //     return genreButton;
+        // }
 
 
         // async function loadAvailableGenres(cityId) {
