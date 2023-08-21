@@ -68,7 +68,7 @@ app.get('/city/:cityId/genre/:genreId/subgenres', async (req, res) => {
 });
 
 
-app.get('city/:cityId/genre/:genreId/subgenre/:subgenreId/quantities', async (req, res) => {
+app.get('/city/:cityId/genre/:genreId/subgenre/:subgenreId/quantities', async (req, res) => {
     const cityId = req.params.cityId;
     const genreId = req.params.genreId;
     const subgenreId = req.params.subgenreId;
