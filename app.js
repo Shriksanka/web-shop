@@ -38,7 +38,7 @@ app.get('/city/:cityId/genres', async (req, res) => {
     }
 
     try {
-        const query = 'SELECT DISTINCT g.name FROM genre g JOIN subgenre sg ON g.genre_id = sg.id_genre JOIN items i ON sg.subgenre_id = i.id_subgenre WHERE i.id_city = $1';
+        const query = 'SELECT DISTINCT g.name FROM genre g JOIN items i ON g.genre_id = i.id_genre WHERE i.id_city = $1';
         const result = await pool.query(query, [cityId]);
         res.json(result.rows);
     } catch (error) {
