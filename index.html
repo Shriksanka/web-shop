@@ -215,8 +215,10 @@
         }
 
 
+        let selectedCityId = null;
+
         function handleCityButtonClick(cityInfo) {
-            const cityId = cityInfo.city_id;
+            selectedCityId = cityInfo.city_id
 
             // Скрыть кнопки городов
             const cityButtonsDiv = document.getElementById('city-buttons');
@@ -225,7 +227,7 @@
             // Показывать кнопки жанров
             const genresListDiv = document.getElementById('genres-list');
             genresListDiv.classList.remove('hidden');
-            loadAvailableGenres(cityId);
+            loadAvailableGenres(selectedCityId);
         }
 
         async function loadAvailableGenres(cityId) {
@@ -319,6 +321,7 @@
 
         function handleGenreButtonClick(genre) {
             console.log('Genre button clicked:', genre.name);
+            loadAvailableSubgenres(genre.genre_id, selectedCityId);
         }
 
 
