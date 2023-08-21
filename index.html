@@ -117,23 +117,24 @@
         function createCityButton(cityInfo) {
             const cityButton = document.createElement('button');
             cityButton.classList.add('city-button');
-            cityButton.addEventListener('click', () => {
-                handleCityButtonClick(cityInfo);
-            });
+            const emojiSpan = document.createElement('span');
+            emojiSpan.classList.add('emoji');
+            const cityNameSpan = document.createElement('span');
+            cityNameSpan.classList.add('city-name');
 
             const emojiMatch = cityInfo.name.match(/(\p{Emoji_Presentation})/gu);
             const emoji = emojiMatch ? emojiMatch[0] : '';
             const cityNameWithoutEmoji = cityInfo.name.replace(/\p{Emoji_Presentation}/gu, '');
 
-            const emojiSpan = document.createElement('span');
             emojiSpan.textContent = emoji;
-            emojiSpan.classList.add('emoji');
-            cityButton.appendChild(emojiSpan);
-
-            const cityNameSpan = document.createElement('span');
             cityNameSpan.textContent = cityNameWithoutEmoji;
-            cityNameSpan.classList.add('city-name');
+
+            cityButton.appendChild(emojiSpan);
             cityButton.appendChild(cityNameSpan);
+
+            cityButton.addEventListener('click', () => {
+                handleCityButtonClick(cityInfo);
+            });
 
             return cityButton
         }
@@ -170,10 +171,7 @@
 
 
         function handleCityButtonClick(cityInfo) {
-            console.log('City button clicked. City ID:', cityId);
-
             const cityId = cityInfo.city_id;
-            const cityName = cityInfo.name;
 
             // Скрыть кнопки городов
             const cityButtonsDiv = document.getElementById('city-buttons');
