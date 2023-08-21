@@ -395,9 +395,9 @@
         function handleGenreButtonClick(genre) {
             console.log('Genre button clicked:', genre.name);
             selectedGenreId = genre.genre_id
-            const cityId = selectedCityId
             const genresListDiv = document.getElementById('genres-list');
             genresListDiv.classList.add('hidden');
+            console.log('Genres list hidden');
             loadAvailableSubgenres(selectedGenreId, selectedCityId);
         }
 
