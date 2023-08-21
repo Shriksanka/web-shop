@@ -5,121 +5,8 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
     <title>Shop</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;500&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Monserrat', sans-serif;
-            font-weight: 200;
-            color: var(--tg-theme-text-color);
-            background-color: var(--tg-theme-bg-color);
-        }
-
-        #main {
-            width: 100%;
-            padding: 20px;
-            text-align: center;
-        }
-
-        h1 {
-            margin-top: 50px;
-            margin-bottom: 10px;
-        }
-
-        img {
-            width: 70px;
-            margin: 30px auto;
-        }
-
-        p {
-            width: 350px;
-            margin: 0 auto;
-        }
-
-        .city-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            padding: 0 20px; /* Добавляем отступы для красоты */
-        }
-
-        .city-button {
-            display: flex;
-            border: 0;
-            border-radius: 10px;
-            margin: 10px;
-            padding: 10px;
-            width: 200px;
-            font-size: 18px;
-            font-weight: 500;
-            text-align: center;
-            cursor: pointer;
-            transition: all 300ms ease;
-            background-color: var(--tg-theme-button-text-color);
-            color: var(--tg-theme-button-color);
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .city-button:hover {
-            background-color: var(--tg-theme-secondary-bg-color);
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .emoji {
-            display: block;
-            font-size: 36px;
-            margin-bottom: 8px;
-        }
-
-        .city-name {
-            display: block;
-            font-size: 16px;
-            text-align: center;
-        }
-
-        .genre-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            padding: 20px;
-        }
-
-        .genre-button {
-            display: block;
-            border: 0;
-            border-radius: 10px;
-            margin: 10px;
-            padding: 10px;
-            font-size: 18px;
-            font-weight: 500;
-            text-align: center;
-            cursor: pointer;
-            transition: all 300ms ease;
-            background-color: var(--tg-theme-button-text-color);
-            color: var(--tg-theme-button-color);
-        }
-
-        .genre-button:hover {
-            background-color: var(--tg-theme-secondary-bg-color);
-        }
-
-        .genre-name {
-            display: block;
-            font-size: 16px;
-            text-align: center;
-        }
-    </style>
 </head>
 <body>
     <div id="main">
@@ -129,6 +16,7 @@
     </div>
     <div id="city-buttons" class="city-buttons"></div>
     <div id="genres-list" class="genre-buttons"></div>
+    <div id="subgenres-list" class="subgenre-list"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
 
@@ -232,83 +120,50 @@
             return genreButton;
         }
 
-        // async function loadAvailableGenres(cityId) {
-        //     try {
-        //         console.log(`Fetching genres for city ${cityId}`);
-        //         const response = await fetch(`/city/${cityId}/genres`);
-        //         console.log(`Response received for genres of city ${cityId}`);
-        //         const availableGenres = await response.json();
-        //
-        //         const genresListDiv = document.getElementById('genres-list');
-        //         genresListDiv.innerHTML = '';
-        //
-        //         const rows = Math.ceil(availableGenres.length / 2);
-        //
-        //         for (let i = 0; i < rows; i++) {
-        //             const rowContainer = document.createElement('div');
-        //             rowContainer.classList.add('genre-row')
-        //             genresListDiv.appendChild(rowContainer);
-        //
-        //             for (let j = i * 2; j < (i * 2) + 2 && j < availableGenres.length; j++) {
-        //                 const genreButton = createGenreButton(availableGenres[j]);
-        //                 rowContainer.appendChild(genreButton);
-        //             }
-        //         }
-        //     } catch (error) {
-        //         console.error('Ошибка при получении доступных жанров:', error);
-        //     }
-        // }
-        //
-        //
-        // function createGenreButton(genreInfo) {
-        //     const genreButton = document.createElement('button');
-        //     genreButton.classList.add('genre-button');
-        //     genreButton.addEventListener('click', () => {
-        //         handleGenreButtonClick(genreInfo);
-        //     });
-        //
-        //     const emojiMatch = genreInfo.name.match(/(\p{Emoji_Presentation})/gu);
-        //     const emoji = emojiMatch ? emojiMatch[0] : '';
-        //     const genreNameWithoutEmoji = genreInfo.name.replace(/\p{Emoji_Presentation}/gu, '');
-        //
-        //     const emojiSpan = document.createElement('span');
-        //     emojiSpan.textContent = emoji;
-        //     emojiSpan.classList.add('emoji');
-        //     genreButton.appendChild(emojiSpan);
-        //
-        //     const genreNameSpan = document.createElement('span');
-        //     genreNameSpan.textContent = genreNameWithoutEmoji;
-        //     genreNameSpan.classList.add('genre-name');
-        //     genreButton.appendChild(genreNameSpan);
-        //
-        //     return genreButton;
-        // }
+
+        async function loadAvailableSubgenres(genreId, cityId) {
+            try {
+                console.log(`Fetching subgenres for genre ${genreId} in city ${cityId}`);
+                const response = await fetch(`/city/${cityId}/genre/${genreId}/subgenres`);
+                console.log(`Response received for subgenres of genre ${genreId} in city ${cityId}`);
+                const availableSubgenres = await response.json();
+
+                const subgenresListDiv = document.getElementById('subgenres-list');
+                subgenresListDiv.innerHTML = '';
+
+                availableSubgenres.forEach(subgenre => {
+                    const subgenreBlock = createSubgenreBlock(subgenre);
+                    subgenresListDiv.appendChild(subgenreBlock);
+                });
+            } catch (error) {
+                console.error('Ошибка при получении доступных поджанров:', error);
+            }
+        }
 
 
-        // async function loadAvailableGenres(cityId) {
-        //     try {
-        //         console.log(`Fetching genres for city ${cityId}`);
-        //         const response = await fetch(`/city/${cityId}/genres`);
-        //         console.log(`Response received for genres of city ${cityId}`)
-        //         const availableGenres = await response.json();
-        //
-        //         const genresListDiv = document.getElementById('genres-list');
-        //         genresListDiv.innerHTML = '';
-        //
-        //         availableGenres.forEach(genre => {
-        //             console.log('Adding genre button:', genre.name);
-        //             const genreButton = document.createElement('button');
-        //             genreButton.textContent = genre.name;
-        //             genreButton.classList.add('city-button');
-        //             genreButton.addEventListener('click', () => {
-        //                 handleGenreButtonClick(genre);
-        //             });
-        //             genresListDiv.appendChild(genreButton);
-        //         });
-        //     } catch (error) {
-        //         console.error('Ошибка при получении доступных жанров:', error);
-        //     }
-        // }
+        function createSubgenreBlock(subgenreInfo) {
+            const subgenreBlock = document.createElement('div');
+            subgenreBlock.classList.add('subgenre-block');
+
+            const subgenreName = document.createElement('div');
+            subgenreName.textContent = subgenreInfo.name;
+            subgenreName.classList.add('subgenre-name');
+            subgenreBlock.appendChild(subgenreName);
+
+            const addSubgenreButton = document.createElement('button');
+            addSubgenreButton.textContent = '+';
+            addSubgenreButton.classList.add('add-subgenre-button');
+            addSubgenreButton.addEventListener('click', () => {
+                handleAddSubgenreButtonClick(subgenreInfo);
+            });
+            subgenreBlock.appendChild(addSubgenreButton);
+
+            return subgenreBlock;
+        }
+
+        function handleAddSubgenreButtonClick(subgenreInfo) {
+            console.log('Добавлен поджанр:', subgenreInfo.name);
+        }
 
 
         function handleGenreButtonClick(genre) {

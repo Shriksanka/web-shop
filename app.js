@@ -48,6 +48,24 @@ app.get('/city/:cityId/genres', async (req, res) => {
 });
 
 
+app.get('/city/:cityId/genre/:genreId/subgenres', async (req, res) => {
+    const cityId = req.params.cityId;
+    const genreId = req.params.genreId;
+
+    if (!Number.isInteger(Number(cityId)) || !Number.isInteger(Number(genreId))) {
+        res.status(400).json({ error: 'City ID or Genre ID is missing'});
+        return;
+    }
+
+    try {
+        const query = 'SELECT sg.name FROM subgenre sg JOIN items i ON sg.subgenre_id = i.id_subgenre WHERE i.id_city = $1 AND i.id_genre = $2';
+        const result = await pool.query(query, [cityId, genreId]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ error: 'Database error'});
+    }
+});
 
 // Обработчик GET-запроса для главной страницы
 app.get('/', (req, res) => {
