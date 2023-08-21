@@ -137,6 +137,7 @@
             margin: 10px;
             background-color: var(--tg-theme-bg-color);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         .subgenre-name {
@@ -165,6 +166,9 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             padding: 10px;
+            margin-top: 10px;
+            top: 100%;
+            left: 0;
         }
 
         .subgenre-menu.show {
@@ -327,10 +331,18 @@
             const subgenreBlock = document.createElement('div');
             subgenreBlock.classList.add('subgenre-block');
 
-            const subgenreName = document.createElement('div');
-            subgenreName.textContent = subgenreInfo.name;
-            subgenreName.classList.add('subgenre-name');
-            subgenreBlock.appendChild(subgenreName);
+            const emojiSpan = document.createElement('span');
+            const emojiMatch = subgenreInfo.name.match(/(\p{Emoji_Presentation})/gu);
+            emojiSpan.textContent = emojiMatch ? emojiMatch[0] : '';
+            emojiSpan.classList.add('emoji');
+            subgenreBlock.appendChild(emojiSpan);
+
+            const subgenreNameWithoutEmoji = subgenreInfo.name.replace(/\p{Emoji_Presentation}/gu, '');
+
+            const subgenreNameSpan = document.createElement('span');
+            subgenreNameSpan.textContent = subgenreNameWithoutEmoji;
+            subgenreNameSpan.classList.add('subgenre-name');
+            subgenreBlock.appendChild(subgenreNameSpan)
 
             const addSubgenreButton = document.createElement('button');
             addSubgenreButton.textContent = '+';
@@ -394,6 +406,7 @@
             selectedGenreId = genre.genre_id
 
             const genresListDiv = document.getElementById('genres-list');
+            console.log('Hiding genre buttons');
             genresListDiv.classList.add('hidden');
 
             loadAvailableSubgenres(selectedGenreId, selectedCityId);
@@ -412,6 +425,21 @@
                 loadAvailableQuantities(subgenreId);
             }
         }
+
+        const body = document.body;
+
+        body.addEventListener('click', (event) => {
+            const target = event.target;
+
+            const isMenuElement = target.classList.contains('subgenre-menu') || target.classList.contains('add-subgenre-button');
+
+            if (!isMenuElement) {
+                const allMenus = document.querySelectorAll('.subgenre-menu');
+                allMenus.forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
 
 
         let tg = window.Telegram.WebApp;
