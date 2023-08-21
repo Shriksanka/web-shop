@@ -114,6 +114,7 @@
                 console.error('Ошибка при получении списка городов:', error);
             });
 
+
         function createCityButton(cityInfo) {
             const cityButton = document.createElement('button');
             cityButton.classList.add('city-button');
@@ -139,36 +140,6 @@
 
             return cityButton
         }
-        // Загрузка списка городов при загрузке страницы
-        // fetch('/city')
-        //     .then(response => {
-        //         console.log(response);
-        //         return response.json();
-        //     })
-        //     .then(cities => {
-        //         const cityButtonsDiv = document.getElementById('city-buttons');
-        //         cities.forEach(city => {
-        //             const cityButton = document.createElement('button');
-        //             const emojiSpan = document.createElement('span');
-        //             emojiSpan.classList.add('emoji');
-        //             emojiSpan.textContent = city.name.charAt(0);
-        //             const cityNameSpan = document.createElement('span');
-        //             cityNameSpan.classList.add('city-name');
-        //             cityNameSpan.textContent = city.name.substring(1);
-        //             cityButton.appendChild(emojiSpan);
-        //             cityButton.appendChild(cityNameSpan);
-        //             cityButton.classList.add('city-button');
-        //             // cityButton.textContent = city.name;
-        //             // cityButton.classList.add('city-button');
-        //             cityButton.addEventListener('click', () => {
-        //                 handleCityButtonClick(city.city_id);
-        //             });
-        //             cityButtonsDiv.appendChild(cityButton);
-        //         });
-        //     })
-        // .catch(error => {
-        //     console.error('Ошибка при получении списка городов:', error);
-        // });
 
 
         function handleCityButtonClick(cityInfo) {
@@ -189,26 +160,79 @@
             try {
                 console.log(`Fetching genres for city ${cityId}`);
                 const response = await fetch(`/city/${cityId}/genres`);
-                console.log(`Response received for genres of city ${cityId}`)
+                console.log(`Response received for genres of city ${cityId}`);
                 const availableGenres = await response.json();
 
                 const genresListDiv = document.getElementById('genres-list');
                 genresListDiv.innerHTML = '';
 
-                availableGenres.forEach(genre => {
-                    console.log('Adding genre button:', genre.name);
-                    const genreButton = document.createElement('button');
-                    genreButton.textContent = genre.name;
-                    genreButton.classList.add('city-button');
-                    genreButton.addEventListener('click', () => {
-                        handleGenreButtonClick(genre);
-                    });
-                    genresListDiv.appendChild(genreButton);
-                });
+                const rows = Math.ceil(availableGenres.length / 2);
+
+                for (let i = 0; i < rows; i++) {
+                    const rowContainer = document.createElement('div');
+                    rowContainer.classList.add('genre-row')
+                    genresListDiv.appendChild(rowContainer);
+
+                    for (let j = i * 2; j < (i * 2) + 2 && j < availableGenres.length; j++) {
+                        const genreButton = createGenreButton(availableGenres[j]);
+                        rowContainer.appendChild(genreButton);
+                    }
+                }
             } catch (error) {
                 console.error('Ошибка при получении доступных жанров:', error);
             }
         }
+
+
+        function createGenreButton(genreInfo) {
+            const genreButton = document.createElement('button');
+            genreButton.classList.add('city-button');
+            genreButton.addEventListener('click', () => {
+                handleGenreButtonClick(genreInfo);
+            });
+
+            const emojiMatch = genreInfo.name.match(/(\p{Emoji_Presentation})/gu);
+            const emoji = emojiMatch ? emojiMatch[0] : '';
+            const genreNameWithoutEmoji = genreInfo.name.replace(/\p{Emoji_Presentation}/gu, '');
+
+            const emojiSpan = document.createElement('span');
+            emojiSpan.textContent = emoji;
+            emojiSpan.classList.add('emoji');
+            genreButton.appendChild(emojiSpan);
+
+            const genreNameSpan = document.createElement('span');
+            genreNameSpan.textContent = genreNameWithoutEmoji;
+            genreNameSpan.classList.add('city-name');
+            genreButton.appendChild(genreNameSpan);
+
+            return genreButton;
+        }
+
+
+        // async function loadAvailableGenres(cityId) {
+        //     try {
+        //         console.log(`Fetching genres for city ${cityId}`);
+        //         const response = await fetch(`/city/${cityId}/genres`);
+        //         console.log(`Response received for genres of city ${cityId}`)
+        //         const availableGenres = await response.json();
+        //
+        //         const genresListDiv = document.getElementById('genres-list');
+        //         genresListDiv.innerHTML = '';
+        //
+        //         availableGenres.forEach(genre => {
+        //             console.log('Adding genre button:', genre.name);
+        //             const genreButton = document.createElement('button');
+        //             genreButton.textContent = genre.name;
+        //             genreButton.classList.add('city-button');
+        //             genreButton.addEventListener('click', () => {
+        //                 handleGenreButtonClick(genre);
+        //             });
+        //             genresListDiv.appendChild(genreButton);
+        //         });
+        //     } catch (error) {
+        //         console.error('Ошибка при получении доступных жанров:', error);
+        //     }
+        // }
 
 
         function handleGenreButtonClick(genre) {
