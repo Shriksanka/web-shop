@@ -32,16 +32,21 @@ app.get('/city', (req, res) => {
 app.get('/city/:cityId/genres', async (req, res) => {
     const cityId = req.params.cityId;
 
-    pool.query('SELECT DISTINCT g.name FROM genre g JOIN subgenre sg ON g.genre_id = sg.id_genre JOIN items i ON sg.subgenre_id = i.id_subgenre WHERE i.id_city = $1', [cityId], (err, result) => {
-        if (err) {
-            console.error('Database error: ', err); //
-            res.status(500).json({ error: 'Database error' });
-            return;
-        }
-        console.log('Query result:', result.rows);
+    if (!cityId) {
+        res.status(400).json({ error: 'City ID is missing' });
+        return;
+    }
+
+    try {
+        const query = 'SELECT DISTINCT g.name FROM genre g JOIN subgenre sg ON g.genre_id = sg.id_genre JOIN items i ON sg.subgenre_id = i.id_subgenre WHERE i.id_city = $1';
+        const result = await pool.query(query, [cityId]);
         res.json(result.rows);
-    });
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
+
 
 
 // Обработчик GET-запроса для главной страницы
