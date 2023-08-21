@@ -1,2 +1,2 @@
-"web: node app.js"
-"worker: python main.py"
+web: node app.js
+worker: python main.py
