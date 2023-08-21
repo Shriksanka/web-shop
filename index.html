@@ -51,7 +51,7 @@
         }
 
         .city-button {
-            display: block;
+            display: flex;
             border: 0;
             border-radius: 10px;
             margin: 10px;
@@ -64,6 +64,8 @@
             transition: all 300ms ease;
             background-color: var(--tg-theme-button-text-color);
             color: var(--tg-theme-button-color);
+            flex-direction: column;
+            align-items: center;
         }
 
         .city-button:hover {
@@ -75,15 +77,13 @@
         }
 
         .emoji {
-            display: block;
             font-size: 36px;
             margin-bottom: 8px;
         }
 
         .city-name {
-            display: block;
             font-size: 16px;
-            text-align: ;
+            text-align: center;
         }
     </style>
 </head>
@@ -117,19 +117,20 @@
         function createCityButton(cityInfo) {
             const cityButton = document.createElement('button');
             cityButton.classList.add('city-button');
-            const emojiSpan = document.createElement('span');
-            emojiSpan.classList.add('emoji');
-            const cityNameSpan = document.createElement('span');
-            cityNameSpan.classList.add('city-name');
 
-            const emojiMatch = cityInfo.name.match(/(\p{Emoji_Presentation})/gu);
+            const cityName = cityInfo.name;
+            const emojiMatch = cityName.match(/(\p{Emoji_Presentation})/gu);
             const emoji = emojiMatch ? emojiMatch[0] : '';
-            const cityNameWithoutEmoji = cityInfo.name.replace(/\p{Emoji_Presentation}/gu, '');
+            const cityNameWithoutEmoji = cityName.replace(/\p{Emoji_Presentation}/gu, '');
 
+            const emojiSpan = document.createElement('span');
             emojiSpan.textContent = emoji;
-            cityNameSpan.textContent = cityNameWithoutEmoji;
-
+            emojiSpan.classList.add('emoji');
             cityButton.appendChild(emojiSpan);
+
+            const cityNameSpan = document.createElement('span');
+            cityNameSpan.textContent = cityNameWithoutEmoji;
+            cityNameSpan.classList.add('city-name');
             cityButton.appendChild(cityNameSpan);
 
             cityButton.addEventListener('click', () => {
