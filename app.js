@@ -32,7 +32,7 @@ app.get('/city', (req, res) => {
 app.get('/city/:cityId/genres', async (req, res) => {
     const cityId = req.params.cityId;
 
-    if (!cityId) {
+    if (!Number.isInteger(Number(cityId))) {
         res.status(400).json({ error: 'City ID is missing' });
         return;
     }
