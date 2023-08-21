@@ -405,7 +405,7 @@
             console.log('Genre button clicked:', genre.name);
             selectedGenreId = genre.genre_id
 
-            const genreButtons = document.querySelectorAll('.genre-button');
+            const genreButtons = document.querySelectorAll('.genres-list');
 
             genreButtons.forEach(button => {
                 button.classList.add('hidden');
@@ -426,29 +426,22 @@
             if (subgenreMenu.classList.contains('show')) {
                 loadAvailableQuantities(subgenreId);
             }
-
-            const allMenus = document.querySelectorAll('.subgenre-menu');
-            allMenus.forEach(menu => {
-                if (menu !== subgenreMenu) {
-                    menu.classList.remove('show');
-                }
-            })
         }
 
-        // const body = document.body;
-        //
-        // body.addEventListener('click', (event) => {
-        //     const target = event.target;
-        //
-        //     const isMenuElement = target.classList.contains('subgenre-menu') || target.classList.contains('add-subgenre-button');
-        //
-        //     if (!isMenuElement) {
-        //         const allMenus = document.querySelectorAll('.subgenre-menu');
-        //         allMenus.forEach(menu => {
-        //             menu.classList.remove('show');
-        //         });
-        //     }
-        // });
+        const body = document.body;
+
+        body.addEventListener('click', (event) => {
+            const target = event.target;
+
+            const isMenuElement = target.classList.contains('subgenre-menu') || target.classList.contains('add-subgenre-button');
+
+            if (!isMenuElement) {
+                const allMenus = document.querySelectorAll('.subgenre-menu');
+                allMenus.forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
 
 
         let tg = window.Telegram.WebApp;
