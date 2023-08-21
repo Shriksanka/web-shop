@@ -354,7 +354,7 @@
             const cityId = selectedCityId;
 
             try {
-                const response = await fetch(`/city/${cityId}/genre/${genreId}/subgenres/${subgenreId}/quantities`);
+                const response = await fetch(`/city/${cityId}/genre/${genreId}/subgenre/${subgenreId}/quantities`);
                 const availableQuantities = await response.json();
 
                 menu.innerHTML = '';
