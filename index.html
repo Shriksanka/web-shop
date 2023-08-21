@@ -357,6 +357,8 @@
                 const response = await fetch(`/city/${cityId}/genre/${genreId}/subgenre/${subgenreId}/quantities`);
                 const availableQuantities = await response.json();
 
+                console.log('Available quantities:', availableQuantities);
+
                 menu.innerHTML = '';
                 availableQuantities.forEach(quantity => {
                     const quantityButton = createQuantityButton(quantity);
@@ -393,6 +395,9 @@
 
             const genresListDiv = document.getElementById('genres-list');
             genresListDiv.classList.add('hidden');
+
+            const subgenresListDiv = document.getElementById('sugenres-list');
+            subgenresListDiv.classList.remove('hidden');
 
             loadAvailableSubgenres(selectedGenreId, selectedCityId);
         }
