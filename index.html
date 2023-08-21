@@ -89,14 +89,14 @@
         }
 
         .genre-buttons {
-            display: grid;
+            display: none;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             padding: 20px;
         }
 
         .genre-button {
-            display: flex;
+            display: block;
             border: 0;
             border-radius: 10px;
             margin: 10px;
@@ -260,6 +260,7 @@
             // Показывать кнопки жанров
             const genresListDiv = document.getElementById('genres-list');
             genresListDiv.classList.remove('hidden');
+            genresListDiv.style.display = 'grid';
             loadAvailableGenres(selectedCityId);
         }
 
