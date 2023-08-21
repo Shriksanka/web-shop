@@ -199,7 +199,7 @@
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
     </div>
     <div id="city-buttons" class="city-buttons"></div>
-    <div id="genres-list" class="genre-buttons"></div>
+    <div id="genres-list" class="genre-buttons hidden"></div>
     <div id="subgenres-list" class="subgenre-list"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -426,22 +426,29 @@
             if (subgenreMenu.classList.contains('show')) {
                 loadAvailableQuantities(subgenreId);
             }
+
+            const allMenus = document.querySelectorAll('.subgenre-menu');
+            allMenus.forEach(menu => {
+                if (menu !== subgenreMenu) {
+                    menu.classList.remove('show');
+                }
+            })
         }
 
-        const body = document.body;
-
-        body.addEventListener('click', (event) => {
-            const target = event.target;
-
-            const isMenuElement = target.classList.contains('subgenre-menu') || target.classList.contains('add-subgenre-button');
-
-            if (!isMenuElement) {
-                const allMenus = document.querySelectorAll('.subgenre-menu');
-                allMenus.forEach(menu => {
-                    menu.classList.remove('show');
-                });
-            }
-        });
+        // const body = document.body;
+        //
+        // body.addEventListener('click', (event) => {
+        //     const target = event.target;
+        //
+        //     const isMenuElement = target.classList.contains('subgenre-menu') || target.classList.contains('add-subgenre-button');
+        //
+        //     if (!isMenuElement) {
+        //         const allMenus = document.querySelectorAll('.subgenre-menu');
+        //         allMenus.forEach(menu => {
+        //             menu.classList.remove('show');
+        //         });
+        //     }
+        // });
 
 
         let tg = window.Telegram.WebApp;
