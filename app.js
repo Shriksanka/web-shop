@@ -79,7 +79,7 @@ app.get('city/:cityId/genre/:genreId/subgenre/:subgenreId/quantities', async (re
     }
 
     try {
-        const query = 'SELECT DISTINCT i.quantity FROM items i WHERE i.id_city = $1 AND i.id_genre = $2 AND i.id_subgenre = $3';
+        const query = 'SELECT q.quantity_id, q.value AS quantity_value FROM items i INNER JOIN quantity q ON i.id_quantity = q.quantity_id WHERE i.id_city = $1 AND i.id_genre = $2 AND i.id_subgenre = $3';
         const result = await pool.query(query, [cityId, genreId, subgenreId]);
         res.json(result.rows);
     } catch (error) {
