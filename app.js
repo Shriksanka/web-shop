@@ -34,9 +34,11 @@ app.get('/city/:cityId/genres', async (req, res) => {
 
     pool.query('SELECT DISTINCT g.name FROM genre g JOIN subgenre sg ON g.genre_id = sg.id_genre JOIN items i ON sg.subgenre_id = i.id_subgenre WHERE i.id_city = $1', [cityId], (err, result) => {
         if (err) {
+            console.error('Database error: ', err);
             res.status(500).json({ error: 'Database error' });
             return;
         }
+        console.log('Query result:', result.rows);
         res.json(result.rows);
     });
 });
