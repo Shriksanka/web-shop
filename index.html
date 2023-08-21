@@ -96,8 +96,17 @@
                 const cityButtonsDiv = document.getElementById('city-buttons');
                 cities.forEach(city => {
                     const cityButton = document.createElement('button');
-                    cityButton.textContent = city.name;
+                    const emojiSpan = document.createElement('span');
+                    emojiSpan.classList.add('emoji');
+                    emojiSpan.textContent = city.name.charAt(0);
+                    const cityNameSpan = document.createElement('span');
+                    cityNameSpan.classList.add('city-name');
+                    cityNameSpan.textContent = city.name.substring(1);
+                    cityButton.appendChild(emojiSpan);
+                    cityButton.appendChild(cityNameSpan);
                     cityButton.classList.add('city-button');
+                    // cityButton.textContent = city.name;
+                    // cityButton.classList.add('city-button');
                     cityButton.addEventListener('click', () => {
                         handleCityButtonClick(city.city_id);
                     });
