@@ -405,9 +405,11 @@
             console.log('Genre button clicked:', genre.name);
             selectedGenreId = genre.genre_id
 
-            const genresListDiv = document.getElementById('genres-list');
-            console.log('Hiding genre buttons');
-            genresListDiv.classList.add('hidden');
+            const genreButtons = document.querySelectorAll('.genre-button');
+
+            genreButtons.forEach(button => {
+                button.classList.add('hidden');
+            });
 
             loadAvailableSubgenres(selectedGenreId, selectedCityId);
 
