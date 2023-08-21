@@ -157,6 +157,35 @@
         .add-subgenre-button:hover {
             background-color: var(--tg-theme-secondary-bg-color);
         }
+
+        .subgenre-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .subgenre-menu.show {
+            display: block;
+        }
+
+        .quantity-button {
+            display: block;
+            margin-top: 10px;
+            background-color: var(--tg-theme-button-text-color);
+            color: var(--tg-theme-button-color);
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .quantity-button:hover {
+            background-color: var(--tg-theme-secondary-bg-color);
+        }
     </style>
 </head>
 <body>
@@ -307,15 +336,53 @@
             addSubgenreButton.textContent = '+';
             addSubgenreButton.classList.add('add-subgenre-button');
             addSubgenreButton.addEventListener('click', () => {
-                handleAddSubgenreButtonClick(subgenreInfo);
+                toggleSubgenreMenu(subgenreInfo.subgenre_id);
             });
             subgenreBlock.appendChild(addSubgenreButton);
+
+            const subgenreMenu = document.createElement('div');
+            subgenreMenu.classList.add('subgenre-menu');
+            subgenreBlock.appendChild(subgenreMenu);
 
             return subgenreBlock;
         }
 
-        function handleAddSubgenreButtonClick(subgenreInfo) {
-            console.log('Добавлен поджанр:', subgenreInfo.name);
+        async function loadAvailableQuantities(menu, subgenreId, cityId) {
+            try {
+                const response = await fetch(`/city/${cityId}/subgenre/${subgenreId}/quantities`);
+                const availableQuantities = await response.json();
+
+                menu.innerHTML = '';
+                availableQuantities.forEach(quantity => {
+                    const quantityButton = createQuantityButton(quantity);
+                    menu.appendChild(quantityButton);
+                });
+            } catch (error) {
+                console.error('Ошибка при получении доступных значений quantity:', error);
+            }
+        }
+
+
+        function createQuantityButton(quantityInfo) {
+            const quantityButton = document.createElement('button');
+            quantityButton.textContent = quantityInfo.value;
+            quantityButton.classList.add('quantity-button');
+
+            quantityButton.addEventListener('click', () => {
+                handleQuantityButtonClick(quantityInfo);
+            });
+            return quantityButton;
+        }
+
+
+        function handleQuantityButtonClick(quantityInfo) {
+            console.log('Выбрано quantity:', quantityInfo.value)
+        }
+
+
+        function toggleSubgenreMenu(subgenreId) {
+            const subgenreMenu = documnet.querySelector(`.subgenre-menu[data-subgenre="${subgenreId}"]`);
+            subgenreMenu.classList.toggle('show');
         }
 
 
