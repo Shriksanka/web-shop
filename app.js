@@ -19,7 +19,7 @@ app.use(cors()); // Разрешаем CORS для всех запросов
 
 
 app.get('/city', (req, res) => {
-    pool.query('SELECT name FROM city', (err, result) => {
+    pool.query('SELECT city_id, name FROM city', (err, result) => {
         if (err) {
             res.status(500).json({error: 'Database error'});
             return;
