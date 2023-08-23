@@ -133,11 +133,57 @@
             align-items: center;
             border: 1px solid #ccc;
             border-radius: 10px;
-            padding: 10px;
+            padding: 20px;
             margin: 10px;
             background-color: var(--tg-theme-bg-color);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             position: relative;
+        }
+
+        .subgenre-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .subgenre-quantity {
+            display: flex;
+            align-items: center;
+        }
+
+        .subgenre-quantity-button {
+            background-color: var(--tg-theme-button-text-color);
+            color: var(--tg-theme-button-color);
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 0 5px;
+        }
+
+        .subgenre-quantity-value {
+            font-size: 18px;
+            margin: 0 10px;
+        }
+
+        .subgenre-quantity-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+            width: 50px;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .subgenre-quantity-menu.show {
+            display: block;
         }
 
         .subgenre-name {
@@ -347,18 +393,37 @@
             subgenreNameSpan.classList.add('subgenre-name');
             subgenreBlock.appendChild(subgenreNameSpan)
 
-            const addSubgenreButton = document.createElement('button');
-            addSubgenreButton.textContent = '+';
-            addSubgenreButton.classList.add('add-subgenre-button');
-            addSubgenreButton.addEventListener('click', () => {
+            const subgenreDetails = document.createElement('div');
+            subgenreDetails.classList.add('subgenre-details');
+
+            const addButton = document.createElement('button');
+            addButton.textContent = '+';
+            addButton.classList.add('add-subgenre-button');
+            addButton.addEventListener('click', () => {
                 handleAddSubgenreButtonClick(subgenreInfo);
             });
-            subgenreBlock.appendChild(addSubgenreButton);
+            subgenreDetails.appendChild(addButton);
 
-            const subgenreMenu = document.createElement('div');
-            subgenreMenu.classList.add('subgenre-menu');
-            subgenreMenu.dataset.subgenre = subgenreInfo.subgenre_id;
-            subgenreBlock.appendChild(subgenreMenu);
+            const quantityContainer = document.createElement('div');
+            quantityContainer.classList.add('subgenre-quantity');
+
+            const quantityValue = document.createElement('span');
+            quantityValue.textContent = '0';
+            quantityValue.classList.add('subgenre-quantity-value');
+            quantityContainer.appendChild(quantityValue);
+
+            const quantityMenu = document.createElement('div');
+            quantityMenu.classList.add('subgenre-quantity-menu');
+            quantityMenu.dataset.subgenre = subgenreInfo.subgenre_id;
+            quantityContainer.appendChild(quantityMenu);
+
+            const quantityArrow = document.createElement('span');
+            quantityArrow.textContent = '▼';
+            quantityMenu.appendChild(quantityArrow);
+
+            subgenreDetails.appendChild(quantityContainer);
+
+            subgenreBlock.appendChild(subgenreDetails);
 
             return subgenreBlock;
         }
