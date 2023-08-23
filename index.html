@@ -488,7 +488,7 @@
 
         function handleAddSubgenreButtonClick(subgenreInfo) {
             const subgenreId = subgenreInfo.subgenre_id;
-            const subgenreMenu = document.querySelector(`.subgenre-menu[data-subgenre="${subgenreId}"]`);
+            const subgenreMenu = document.querySelector(`.subgenre-quantity-menu[data-subgenre="${subgenreId}"]`);
             subgenreMenu.classList.toggle('show');
 
             if (subgenreMenu.classList.contains('show')) {
