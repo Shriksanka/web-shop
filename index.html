@@ -527,10 +527,10 @@
         body.addEventListener('click', (event) => {
             const target = event.target;
 
-            const isMenuElement = target.classList.contains('subgenre-menu') || target.classList.contains('add-subgenre-button');
+            const isMenuElement = target.classList.contains('subgenre-quantity-menu') || target.classList.contains('add-subgenre-button');
 
             if (!isMenuElement) {
-                const allMenus = document.querySelectorAll('.subgenre-menu');
+                const allMenus = document.querySelectorAll('.subgenre-quantity-menu');
                 allMenus.forEach(menu => {
                     menu.classList.remove('show');
                 });
