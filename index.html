@@ -524,18 +524,21 @@
 
         const body = document.body;
 
-        body.addEventListener('click', (event) => {
+        document.addEventListener('click', (event) => {
             const target = event.target;
 
-            const isMenuElement = target.classList.contains('subgenre-menu') || target.classList.contains('add-subgenre-button');
+            // Проверяем, был ли клик на элементе меню или его кнопке
+            const isMenuElement = target.classList.contains('subgenre-quantity-menu') || target.classList.contains('add-subgenre-button');
 
             if (!isMenuElement) {
-                const allMenus = document.querySelectorAll('.subgenre-menu');
+                // Если клик был сделан вне меню, скрываем все меню
+                const allMenus = document.querySelectorAll('.subgenre-quantity-menu');
                 allMenus.forEach(menu => {
                     menu.classList.remove('show');
                 });
             }
         });
+
 
 
         let tg = window.Telegram.WebApp;
