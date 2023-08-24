@@ -444,13 +444,24 @@
 
         async function loadAvailableQuantities(subgenreId) {
             const menu = document.querySelector(`.subgenre-menu[data-subgenre="${subgenreId}"]`);
+
+            if (!menu) {
+                console.error(`Menu element with data-subgenre="${subgenreId}" not found.`);
+                return;
+            }
+
             const genreId = selectedGenreId;
             const cityId = selectedCityId;
 
             try {
                 const response = await fetch(`/city/${cityId}/genre/${genreId}/subgenre/${subgenreId}/quantities`);
-                const availableQuantities = await response.json();
 
+                if (!response.ok) {
+                    console.error(`Error fetching quantities. Status: ${response.status}`);
+                    return;
+                }
+
+                const availableQuantities = await response.json();
                 console.log('Available quantities:', availableQuantities);
 
                 menu.innerHTML = '';
@@ -459,9 +470,10 @@
                     menu.appendChild(quantityButton);
                 });
             } catch (error) {
-                console.error('Ошибка при получении доступных значений quantity:', error);
+                console.error('Error while fetching available quantities:', error);
             }
         }
+
 
 
         function createQuantityButton(quantityInfo) {
