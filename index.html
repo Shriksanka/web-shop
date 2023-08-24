@@ -73,7 +73,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         .emoji {
@@ -89,7 +89,7 @@
         }
 
         .genre-buttons {
-            display: none;
+            display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             padding: 20px;
@@ -308,7 +308,6 @@
             // Показывать кнопки жанров
             const genresListDiv = document.getElementById('genres-list');
             genresListDiv.classList.remove('hidden');
-            genresListDiv.style.display = 'grid';
             loadAvailableGenres(selectedCityId);
         }
 
@@ -498,17 +497,10 @@
         function handleGenreButtonClick(genre) {
             console.log('Genre button clicked:', genre.name);
             selectedGenreId = genre.genre_id
-
-            const genreButtons = document.querySelectorAll('.genre-buttons');
-
-            genreButtons.forEach(button => {
-                button.classList.add('hidden');
-            });
-
+            const cityId = selectedCityId
+            const genresListDiv = document.getElementById('genres-list');
+            genresListDiv.classList.add('hidden');
             loadAvailableSubgenres(selectedGenreId, selectedCityId);
-
-            const subgenresListDiv = document.getElementById('subgenres-list');
-            subgenresListDiv.classList.remove('hidden');
         }
 
 
