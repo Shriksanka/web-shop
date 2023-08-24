@@ -247,7 +247,7 @@
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
     </div>
     <div id="city-buttons" class="city-buttons"></div>
-    <div id="genres-list" class="genre-buttons hidden"></div>
+    <div id="genres-list" class="genre-buttons"></div>
     <div id="subgenres-list" class="subgenre-list"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -391,10 +391,13 @@
             const subgenreNameSpan = document.createElement('span');
             subgenreNameSpan.textContent = subgenreNameWithoutEmoji;
             subgenreNameSpan.classList.add('subgenre-name');
-            subgenreBlock.appendChild(subgenreNameSpan)
+            subgenreBlock.appendChild(subgenreNameSpan);
 
             const subgenreDetails = document.createElement('div');
             subgenreDetails.classList.add('subgenre-details');
+
+            const subgenreQuantityContainer = document.createElement('div');
+            subgenreQuantityContainer.classList.add('subgenre-quantity-container');
 
             const addButton = document.createElement('button');
             addButton.textContent = '+';
@@ -402,31 +405,42 @@
             addButton.addEventListener('click', () => {
                 handleAddSubgenreButtonClick(subgenreInfo);
             });
-            subgenreDetails.appendChild(addButton);
+            subgenreQuantityContainer.appendChild(addButton);
 
-            const quantityContainer = document.createElement('div');
-            quantityContainer.classList.add('subgenre-quantity');
+            const quantityMenuButton = document.createElement('button');
+            quantityMenuButton.textContent = '▼';
+            quantityMenuButton.classList.add('quantity-menu-button');
+            quantityMenuButton.addEventListener('click', () => {
+                toggleQuantityMenu(subgenreInfo.subgenre_id);
+            });
+            subgenreQuantityContainer.appendChild(quantityMenuButton);
 
-            const quantityValue = document.createElement('span');
-            quantityValue.textContent = '0';
-            quantityValue.classList.add('subgenre-quantity-value');
-            quantityContainer.appendChild(quantityValue);
+            const selectedQuantitySpan = document.createElement('span');
+            selectedQuantitySpan.textContent = '0';
+            selectedQuantitySpan.classList.add('selected-quantity');
+            subgenreQuantityContainer.appendChild(selectedQuantitySpan);
+
+            subgenreDetails.appendChild(subgenreQuantityContainer);
 
             const quantityMenu = document.createElement('div');
             quantityMenu.classList.add('subgenre-quantity-menu');
             quantityMenu.dataset.subgenre = subgenreInfo.subgenre_id;
-            quantityContainer.appendChild(quantityMenu);
-
-            const quantityArrow = document.createElement('span');
-            quantityArrow.textContent = '▼';
-            quantityMenu.appendChild(quantityArrow);
-
-            subgenreDetails.appendChild(quantityContainer);
+            subgenreDetails.appendChild(quantityMenu);
 
             subgenreBlock.appendChild(subgenreDetails);
 
             return subgenreBlock;
         }
+
+
+        function toggleQuantityMenu(subgenreId) {
+            const quantityMenu = document.querySelector(`.subgenre-quantity-menu[data-subgenre="${subgenreId}"]`);
+            quantityMenu.classList.toggle('show');
+            if (quantityMenu.classList.contains('show')) {
+                loadAvailableQuantities(subgenreId);
+            }
+        }
+
 
         async function loadAvailableQuantities(subgenreId) {
             const menu = document.querySelector(`.subgenre-menu[data-subgenre="${subgenreId}"]`);
