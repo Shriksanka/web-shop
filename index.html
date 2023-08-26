@@ -511,14 +511,12 @@
 
         function handleBackButtonClick() {
             console.log('Back button clicked');
-
-            if (selectedSubgenreId) {
+            const subgenreListElement = document.querySelector('.subgenre-list')
+            if (subgenreListElement !== null) {
                 console.log('Going back from subgenres to genres');
-                selectedSubgenreId = null;
 
-                const subgenresListDiv = document.getElementById('subgenres-list');
-                subgenresListDiv.innerHTML = '';
-                subgenresListDiv.classList.add('hidden');
+                subgenreListElement.innerHTML = '';
+                subgenreListElement.classList.add('hidden');
 
                 const genresListDiv = document.getElementById('genres-list');
                 genresListDiv.classList.remove('hidden');
