@@ -510,7 +510,7 @@
         backButton.addEventListener('click', handleBackButtonClick);
 
         function handleBackButtonClick() {
-            if (selectedSubgenreId) {
+            if (selectedSubgenreId || document.querySelector('.subgenre-quantity-menu.show')) {
                 selectedSubgenreId = null;
                 const subgenresListDiv = document.getElementById('subgenres-list');
                 subgenresListDiv.innerHTML = '';
