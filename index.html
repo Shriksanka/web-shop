@@ -512,8 +512,7 @@
         function handleBackButtonClick() {
             console.log('Back button clicked');
 
-            const subgenreListElement = document.querySelector('.subgenre-list');
-            if (subgenreListElement) {
+            if (selectedSubgenreId !== null) {
                 console.log('Going back from subgenres to genres');
                 selectedSubgenreId = null;
 
@@ -523,18 +522,16 @@
 
                 const genresListDiv = document.getElementById('genres-list');
                 genresListDiv.classList.remove('hidden');
-
-                clearSelectedQuantity();
-            } else if (selectedGenreId) {
+            } else if (selectedGenreId !== null) {
                 console.log('Going back from genres to cities');
                 selectedGenreId = null;
 
                 const genresListDiv = document.getElementById('genres-list');
-                genresListDiv.classList.remove('hidden');
+                genresListDiv.classList.add('hidden');
 
                 const cityButtonsDiv = document.getElementById('city-buttons');
-                cityButtonsDiv.classList.add('hidden');
-            } else if (selectedCityId) {
+                cityButtonsDiv.classList.remove('hidden');
+            } else if (selectedCityId !== null) {
                 console.log('Going back from cities');
                 selectedCityId = null;
 
@@ -547,6 +544,7 @@
 
             clearSelectedQuantity();
         }
+
 
         // function handleBackButtonClick() {
         //     const subgenreListElement = document.querySelector('.subgenre-list')
