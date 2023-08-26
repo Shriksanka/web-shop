@@ -509,9 +509,9 @@
         const backButton = document.getElementById('back-button');
         backButton.addEventListener('click', handleBackButtonClick);
 
+        let subgenreListElement = document.querySelector('.subgenre-list')
         function handleBackButtonClick() {
             console.log('Back button clicked');
-            let subgenreListElement = document.querySelector('.subgenre-list')
             const subgenresHidden = subgenreListElement.classList.contains('hidden');
 
             if (!subgenresHidden && subgenreListElement !== null) {
@@ -622,6 +622,7 @@
             const cityId = selectedCityId
             const genresListDiv = document.getElementById('genres-list');
             genresListDiv.classList.add('hidden');
+            subgenreListElement.classList.remove('hidden');
             loadAvailableSubgenres(selectedGenreId, selectedCityId);
         }
 
