@@ -517,6 +517,7 @@
                 subgenresListDiv.innerHTML = '';
                 subgenresListDiv.classList.add('hidden');
 
+                loadAvailableGenres(selectedCityId);
                 const genresListDiv = document.getElementById('genres-list');
                 genresListDiv.classList.remove('hidden');
                 clearSelectedQuantity();
