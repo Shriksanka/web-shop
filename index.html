@@ -513,8 +513,8 @@
             if (selectedSubgenreId) {
                 selectedSubgenreId = null;
                 const subgenresListDiv = document.getElementById('subgenres-list');
-                subgenresListDiv.classList.add('hidden');
                 subgenresListDiv.innerHTML = '';
+                subgenresListDiv.style.display = 'none'
 
                 loadAvailableSubgenres(selectedGenreId, selectedCityId);
             } else if (selectedGenreId) {
