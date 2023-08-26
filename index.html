@@ -515,7 +515,6 @@
             const subgenresHidden = subgenreListElement.classList.contains('hidden');
 
             if (!subgenresHidden && subgenreListElement !== null) {
-                selectedSubgenreId = null;
                 console.log('Going back from subgenres to genres');
                 const subgenresListDiv = document.getElementById('subgenres-list');
                 subgenresListDiv.innerHTML = '';
@@ -542,6 +541,8 @@
 
                 const genresListDiv = document.getElementById('genres-list');
                 genresListDiv.classList.add('hidden');
+
+                loadAvailableGenres(selectedCityId);
             }
 
             clearSelectedQuantity();
