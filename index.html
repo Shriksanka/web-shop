@@ -511,19 +511,19 @@
 
         function handleBackButtonClick() {
             console.log('Back button clicked');
-            const subgenreListElement = document.querySelector('.subgenre-list')
+            let subgenreListElement = document.querySelector('.subgenre-list')
             const subgenresHidden = subgenreListElement.classList.contains('hidden');
 
-            if (subgenresHidden == false) {
+            if (!subgenresHidden && subgenreListElement !== null) {
                 console.log('Going back from subgenres to genres');
                 const subgenresListDiv = document.getElementById('subgenres-list');
                 subgenresListDiv.innerHTML = '';
                 subgenresListDiv.classList.add('hidden');
+                subgenreListElement = null;
 
                 const genresListDiv = document.getElementById('genres-list');
                 genresListDiv.classList.remove('hidden');
-                clearSelectedQuantity();
-            } else if (selectedGenreId !== null) {
+            } else if (!subgenresHidden && selectedGenreId !== null) {
                 console.log('Going back from genres to cities');
                 selectedGenreId = null;
 
