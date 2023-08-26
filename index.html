@@ -507,13 +507,14 @@
 
         const backButton = document.getElementById('back-button');
         backButton.addEventListener('click', handleBackButtonClick);
+        let insideSubgenres = false;
 
         function handleBackButtonClick() {
             console.log('Back button clicked');
             let subgenreListElement = document.querySelector('.subgenre-list');
             const subgenresHidden = subgenreListElement.classList.contains('hidden');
 
-            if (!subgenresHidden && subgenreListElement !== null) {
+            if (insideSubgenres !== null) {
                 console.log('Going back from subgenres to genres');
                 const subgenresListDiv = document.getElementById('subgenres-list');
                 subgenresListDiv.innerHTML = '';
@@ -522,6 +523,7 @@
 
                 const genresListDiv = document.getElementById('genres-list');
                 genresListDiv.classList.remove('hidden');
+                insideSubgenres = false;
             } else if (selectedGenreId !== null) {
                 console.log('Going back from genres to cities');
                 selectedGenreId = null;
@@ -624,6 +626,7 @@
 
             const subgenresListDiv = document.getElementById('subgenres-list');
             subgenresListDiv.classList.remove('hidden');
+            insideSubgenres = true;
             loadAvailableSubgenres(selectedGenreId, selectedCityId);
         }
 
