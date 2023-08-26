@@ -513,13 +513,15 @@
             console.log('Back button clicked');
             const subgenreListElement = document.querySelector('.subgenre-list')
             if (subgenreListElement !== null) {
+                selectedSubgenreId = null;
                 console.log('Going back from subgenres to genres');
-
-                subgenreListElement.innerHTML = '';
-                subgenreListElement.classList.add('hidden');
+                const subgenresListDiv = document.getElementById('subgenres-list');
+                subgenresListDiv.innerHTML = '';
+                subgenresListDiv.classList.add('hidden');
 
                 const genresListDiv = document.getElementById('genres-list');
                 genresListDiv.classList.remove('hidden');
+                clearSelectedQuantity();
             } else if (selectedGenreId !== null) {
                 console.log('Going back from genres to cities');
                 selectedGenreId = null;
