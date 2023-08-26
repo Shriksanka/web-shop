@@ -514,6 +514,7 @@
                 selectedSubgenreId = null;
                 const subgenresListDiv = document.getElementById('subgenre-list');
                 subgenresListDiv.innerHTML = '';
+                subgenresListDiv.classList.add('hidden');
 
                 loadAvailableSubgenres(selectedGenreId, selectedCityId);
             } else if (selectedGenreId) {
