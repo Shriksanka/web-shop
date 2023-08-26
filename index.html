@@ -510,26 +510,42 @@
         backButton.addEventListener('click', handleBackButtonClick);
 
         function handleBackButtonClick() {
-            const subgenreListElement = document.querySelector('.subgenre-list');
-            const genresListDiv = document.getElementById('genres-list');
-            const cityButtonsDiv = document.getElementById('city-buttons');
+            console.log('Back button clicked');
 
+            const subgenreListElement = document.querySelector('.subgenre-list');
             if (subgenreListElement) {
-                // Если есть отображение поджанров, вернуться на список жанров
-                subgenreListElement.classList.add('hidden');
-                genresListDiv.classList.remove('hidden');
-                clearSelectedQuantity();
+                console.log('Going back from subgenres to genres');
                 selectedSubgenreId = null;
+
+                const subgenresListDiv = document.getElementById('subgenres-list');
+                subgenresListDiv.innerHTML = '';
+                subgenresListDiv.classList.add('hidden');
+
+                const genresListDiv = document.getElementById('genres-list');
+                genresListDiv.classList.remove('hidden');
+
+                clearSelectedQuantity();
             } else if (selectedGenreId) {
-                // Если выбран жанр, вернуться на список городов
-                genresListDiv.classList.add('hidden');
-                cityButtonsDiv.classList.remove('hidden');
+                console.log('Going back from genres to cities');
                 selectedGenreId = null;
-            } else if (selectedCityId) {
-                // Если выбран город, вернуться на начальный экран
+
+                const genresListDiv = document.getElementById('genres-list');
+                genresListDiv.classList.remove('hidden');
+
+                const cityButtonsDiv = document.getElementById('city-buttons');
                 cityButtonsDiv.classList.add('hidden');
+            } else if (selectedCityId) {
+                console.log('Going back from cities');
                 selectedCityId = null;
+
+                const cityButtonsDiv = document.getElementById('city-buttons');
+                cityButtonsDiv.classList.remove('hidden');
+
+                const genresListDiv = document.getElementById('genres-list');
+                genresListDiv.classList.add('hidden');
             }
+
+            clearSelectedQuantity();
         }
 
         // function handleBackButtonClick() {
