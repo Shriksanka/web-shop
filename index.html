@@ -512,9 +512,8 @@
         function handleBackButtonClick() {
             if (selectedSubgenreId) {
                 selectedSubgenreId = null;
-                const subgenresListDiv = document.getElementById('subgenres-list');
+                const subgenresListDiv = document.getElementById('subgenre-list');
                 subgenresListDiv.innerHTML = '';
-                subgenresListDiv.classList.add('hidden');
 
                 loadAvailableSubgenres(selectedGenreId, selectedCityId);
             } else if (selectedGenreId) {
