@@ -512,6 +512,7 @@
             console.log('Back button clicked');
             let subgenreListElement = document.querySelector('.subgenre-list');
             const subgenresHidden = subgenreListElement.classList.contains('hidden');
+            subgenreListElement = null;
 
             if (!subgenresHidden) {
                 console.log('Going back from subgenres to genres');
