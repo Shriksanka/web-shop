@@ -550,23 +550,30 @@
             quantityButton.classList.add('quantity-button');
 
             quantityButton.addEventListener('click', () => {
-                handleQuantityButtonClick(quantityInfo);
+                const subgenreContainer = quantityButton.closest('.subgenre-block');
+                const selectedQuantitySpan = subgenreContainer.querySelector('.selected-quantity');
+
+                if (selectedQuantitySpan) {
+                    selectedQuantitySpan.textContent = quantityInfo.value;
+                }
             });
+
             return quantityButton;
         }
 
 
-        function handleQuantityButtonClick(quantityInfo) {
-            const quantityButton = event.target;
-            const subgenreBlock = quantityButton.closest('.subgenre-block');
-            const subgenreId = subgenreBlock.dataset.subgenre;
+        // function handleQuantityButtonClick(quantityInfo) {
+        //     const quantityButton = event.target;
+        //     const subgenreContainer = quantityButton.closest('.subgenre-block');
+        //     const subgenreId = subgenreContainer.dataset.subgenre;
+        //
+        //     const selectedQuantitySpan = subgenreContainer.querySelector('.selected-quantity');
+        //
+        //     if (selectedQuantitySpan) {
+        //         selectedQuantitySpan.textContent = quantityInfo.value;
+        //     }
+        // }
 
-            const selectedQuantitySpan = subgenreContainer.querySelector('.selected-quantity');
-
-            if (selectedQuantitySpan) {
-                selectedQuantitySpan.textContent = quantityInfo.value;
-            }
-        }
 
         function handleGenreButtonClick(genre) {
             console.log('Genre button clicked:', genre.name);
