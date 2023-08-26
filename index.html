@@ -515,12 +515,10 @@
 
             if (!subgenresHidden && subgenreListElement !== null) {
                 console.log('Going back from subgenres to genres');
-                subgenreListElement.innerHTML = '';  // Очищаем содержимое subgenreListElement
-                subgenreListElement.classList.add('hidden');
-
-                const genresListDiv = document.getElementById('genres-list');
-                genresListDiv.classList.remove('hidden');
-
+                const subgenresListDiv = document.getElementById('subgenres-list');
+                subgenresListDiv.innerHTML = '';
+                subgenresListDiv.classList.add('hidden');
+                subgenreListElement = null;
 
                 const genresListDiv = document.getElementById('genres-list');
                 genresListDiv.classList.remove('hidden');
