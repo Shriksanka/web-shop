@@ -277,7 +277,7 @@
     </div>
     <div id="city-buttons" class="city-buttons"></div>
     <div id="genres-list" class="genre-buttons"></div>
-    <div id="subgenres-list" class="subgenre-list"></div>
+    <div id="subgenres-list hidden" class="subgenre-list"></div>
     <button id="back-button" class="back-button">⬅</button>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -512,7 +512,6 @@
             console.log('Back button clicked');
             let subgenreListElement = document.querySelector('.subgenre-list');
             const subgenresHidden = subgenreListElement.classList.contains('hidden');
-            subgenreListElement = null;
 
             if (!subgenresHidden) {
                 console.log('Going back from subgenres to genres');
