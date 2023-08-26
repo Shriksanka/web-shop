@@ -278,6 +278,7 @@
     <div id="city-buttons" class="city-buttons"></div>
     <div id="genres-list" class="genre-buttons"></div>
     <div id="subgenres-list" class="subgenre-list"></div>
+    <button id="back-button" class="back-button">⬅</button>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
 
@@ -503,6 +504,35 @@
         }
 
 
+        const backButton = document.getElementById('back-button');
+        backButton.addEventListener('click', handleBackButtonClick);
+
+        function handleBackButtonClick() {
+            if (selectedGenreId) {
+                selectedGenreId = null;
+                const genresListDiv = document.getElementById('genres-list');
+                genresListDiv.classList.add('hidden');
+
+                const cityButtonsDiv = document.getElementById('city-buttons');
+                cityButtonsDiv.classList.remove('hidden');
+            } else if (selectedCityId) {
+                selectedCityId = null;
+
+                const cityButtonsDiv = document.getElementById('city-buttons');
+                cityButtonsDiv.classList.remove('hidden');
+
+                const genresListDiv = document.getElementById('genres-list');
+                genresListDiv.classList.add('hidden');
+            }
+
+            selectedSubgenreId = null;
+            clearSelectedQuantity();
+
+            const subgenresListDiv = document.getElementById('subgenres-list');
+            subgenresListDiv.innerHTML = '';
+        }
+
+
 
         function createQuantityButton(quantityInfo) {
             const quantityButton = document.createElement('button');
@@ -551,7 +581,12 @@
             }
         }
 
-        const body = document.body;
+        function clearSelectedQuantity() {
+            const selectedQuantitySpan = document.querySelector('.selected-quantity');
+            if (selectedQuantitySpan) {
+                selectedQuantitySpan.textContent = '0';
+            }
+        }
 
         document.addEventListener('click', (event) => {
             const target = event.target;
