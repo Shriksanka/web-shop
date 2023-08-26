@@ -510,13 +510,15 @@
         backButton.addEventListener('click', handleBackButtonClick);
 
         function handleBackButtonClick() {
-            if (selectedSubgenreId || document.querySelector('.subgenre-quantity-menu.show')) {
+            const subgenreListElement = document.querySelector('.subgenre-list')
+            if (subgenreListElement) {
                 selectedSubgenreId = null;
                 const subgenresListDiv = document.getElementById('subgenres-list');
                 subgenresListDiv.innerHTML = '';
                 subgenresListDiv.classList.add('hidden');
 
                 loadAvailableSubgenres(selectedGenreId, selectedCityId);
+                clearSelectedQuantity();
             } else if (selectedGenreId) {
                 selectedGenreId = null;
                 const genresListDiv = document.getElementById('genres-list');
