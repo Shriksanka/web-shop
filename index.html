@@ -169,21 +169,22 @@
         }
 
         .subgenre-quantity-menu {
-            display: none;
             position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
             background-color: white;
             border: 1px solid #ccc;
             border-radius: 5px;
             padding: 5px;
-            width: 50px;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
             z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .subgenre-quantity-menu.show {
-            display: block;
+            opacity: 1;
         }
 
         .subgenre-name {
@@ -488,7 +489,15 @@
 
 
         function handleQuantityButtonClick(quantityInfo) {
-            console.log('Выбрано quantity:', quantityInfo.value)
+            const quantityButton = event.target;
+            const subgenreContainer = quantityButton.closest('.subgenre-block');
+            const subgenreId = subgenreContainer.dataset.subgenre;
+
+            const selectedQuantitySpan = subgenreContainer.querySelector('.selected-quantity');
+
+            if (selectedQuantitySpan) {
+                selectedQuantitySpan.textContent = quantityInfo.value;
+            }
         }
 
 
