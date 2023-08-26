@@ -508,7 +508,13 @@
         backButton.addEventListener('click', handleBackButtonClick);
 
         function handleBackButtonClick() {
-            if (selectedGenreId) {
+            if (selectedSubgenreId) {
+                selectedSubgenreId = null;
+                const subgenresListDiv = document.getElementById('subgenres-list');
+                subgenresListDiv.innerHTML = '';
+
+                loadAvailableSubgenres(selectedGenreId, selectedCityId);
+            } else if (selectedGenreId) {
                 selectedGenreId = null;
                 const genresListDiv = document.getElementById('genres-list');
                 genresListDiv.classList.add('hidden');
@@ -525,11 +531,7 @@
                 genresListDiv.classList.add('hidden');
             }
 
-            selectedSubgenreId = null;
             clearSelectedQuantity();
-
-            const subgenresListDiv = document.getElementById('subgenres-list');
-            subgenresListDiv.innerHTML = '';
         }
 
 
