@@ -522,7 +522,7 @@
 
                 const genresListDiv = document.getElementById('genres-list');
                 genresListDiv.classList.remove('hidden');
-            } else if (!subgenresHidden && selectedGenreId !== null) {
+            } else if (selectedGenreId !== null) {
                 console.log('Going back from genres to cities');
                 selectedGenreId = null;
 
