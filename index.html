@@ -509,36 +509,61 @@
         const backButton = document.getElementById('back-button');
         backButton.addEventListener('click', handleBackButtonClick);
 
+
         function handleBackButtonClick() {
-            const subgenreListElement = document.querySelector('.subgenre-list')
+            const subgenreListElement = document.querySelector('.subgenre-list');
+            const genresListDiv = document.getElementById('genres-list');
+            const cityButtonsDiv = document.getElementById('city-buttons');
+
             if (subgenreListElement) {
+                // Если открыты поджанры, переключаемся на список жанров
                 selectedSubgenreId = null;
-                const subgenresListDiv = document.getElementById('subgenres-list');
-                subgenresListDiv.innerHTML = '';
-                subgenresListDiv.classList.add('hidden');
-
-                const genresListDiv = document.getElementById('genres-list');
-                genresListDiv.classList.remove('hidden');
                 clearSelectedQuantity();
-            } else if (selectedGenreId) {
-                selectedGenreId = null;
-                const genresListDiv = document.getElementById('genres-list');
+                clearSubgenresList();
+                subgenreListElement.classList.add('hidden');
                 genresListDiv.classList.remove('hidden');
-
-                const cityButtonsDiv = document.getElementById('city-buttons');
-                cityButtonsDiv.classList.add('hidden');
-            } else if (selectedCityId) {
-                selectedCityId = null;
-
-                const cityButtonsDiv = document.getElementById('city-buttons');
-                cityButtonsDiv.classList.remove('hidden');
-
-                const genresListDiv = document.getElementById('genres-list');
+            } else if (selectedGenreId) {
+                // Если открыт список жанров, переключаемся на список городов
+                selectedGenreId = null;
                 genresListDiv.classList.add('hidden');
+                cityButtonsDiv.classList.remove('hidden');
+            } else if (selectedCityId) {
+                // Если открыт список городов, ничего не делаем
+                // (на этом этапе уже находитесь на первой странице)
             }
 
             clearSelectedQuantity();
         }
+        // function handleBackButtonClick() {
+        //     const subgenreListElement = document.querySelector('.subgenre-list')
+        //     if (subgenreListElement) {
+        //         selectedSubgenreId = null;
+        //         const subgenresListDiv = document.getElementById('subgenres-list');
+        //         subgenresListDiv.innerHTML = '';
+        //         subgenresListDiv.classList.add('hidden');
+        //
+        //         const genresListDiv = document.getElementById('genres-list');
+        //         genresListDiv.classList.remove('hidden');
+        //         clearSelectedQuantity();
+        //     } else if (selectedGenreId) {
+        //         selectedGenreId = null;
+        //         const genresListDiv = document.getElementById('genres-list');
+        //         genresListDiv.classList.remove('hidden');
+        //
+        //         const cityButtonsDiv = document.getElementById('city-buttons');
+        //         cityButtonsDiv.classList.add('hidden');
+        //     } else if (selectedCityId) {
+        //         selectedCityId = null;
+        //
+        //         const cityButtonsDiv = document.getElementById('city-buttons');
+        //         cityButtonsDiv.classList.remove('hidden');
+        //
+        //         const genresListDiv = document.getElementById('genres-list');
+        //         genresListDiv.classList.add('hidden');
+        //     }
+        //
+        //     clearSelectedQuantity();
+        // }
 
 
         function clearSubgenresList() {
