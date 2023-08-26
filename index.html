@@ -327,6 +327,8 @@
 
 
         let selectedCityId = null;
+        let selectedGenreId = null;
+        let selectedSubgenreId = null;
 
         function handleCityButtonClick(cityInfo) {
             selectedCityId = cityInfo.city_id
@@ -559,9 +561,6 @@
                 selectedQuantitySpan.textContent = quantityInfo.value;
             }
         }
-
-
-        let selectedGenreId = null;
 
         function handleGenreButtonClick(genre) {
             console.log('Genre button clicked:', genre.name);
