@@ -513,7 +513,7 @@
             let subgenreListElement = document.querySelector('.subgenre-list');
             const subgenresHidden = subgenreListElement.classList.contains('hidden');
 
-            if (!subgenresHidden && subgenreListElement !== null) {
+            if (!subgenresHidden) {
                 console.log('Going back from subgenres to genres');
                 const subgenresListDiv = document.getElementById('subgenres-list');
                 subgenresListDiv.innerHTML = '';
