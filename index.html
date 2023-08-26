@@ -512,17 +512,17 @@
         function handleBackButtonClick() {
             if (selectedSubgenreId) {
                 selectedSubgenreId = null;
-                clearSubgenresList();
-                loadAvailableGenres(selectedCityId);
+                const subgenresListDiv = document.getElementById('subgenres-list');
+                subgenresListDiv.innerHTML = '';
 
                 loadAvailableSubgenres(selectedGenreId, selectedCityId);
             } else if (selectedGenreId) {
                 selectedGenreId = null;
                 const genresListDiv = document.getElementById('genres-list');
-                genresListDiv.classList.add('hidden');
+                genresListDiv.classList.remove('hidden');
 
                 const cityButtonsDiv = document.getElementById('city-buttons');
-                cityButtonsDiv.classList.remove('hidden');
+                cityButtonsDiv.classList.add('hidden');
             } else if (selectedCityId) {
                 selectedCityId = null;
 
