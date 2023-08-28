@@ -16,6 +16,7 @@ admin_inline_menu.add(
     InlineKeyboardButton("Добавить количество", callback_data="add_quantity"),
     InlineKeyboardButton("Добавить жанр", callback_data="add_genre"),
     InlineKeyboardButton("Добавить поджанр", callback_data="add_subgenre"),
+    InlineKeyboardButton("Добавить цену", callback_data="add_price"),
     InlineKeyboardButton("Добавить предмет", callback_data="add_item"),
     InlineKeyboardButton("Посмотреть карточку предмета", callback_data="view_item")
 )
@@ -51,7 +52,18 @@ async def build_subgenre_inline_menu():
     return subgenre_inline_menu
 
 
-async def build_quantity_inline_menu():
+async def build_quantity_inline_menu(subgenre_id):
+    quantity_inline_menu = InlineKeyboardMarkup(row_width=2)
+    quantities = await db.get_all_quantities()
+    for quantity in quantities:
+        quantity_id = quantity[0]
+        quantity_inline_menu.insert(
+            InlineKeyboardButton(quantity[1], callback_data=str(quantity[0]))
+        )
+    return quantity_inline_menu
+
+
+async def build_quantities_inline_menu():
     quantity_inline_menu = InlineKeyboardMarkup(row_width=2)
     quantities = await db.get_all_quantities()
     for quantity in quantities:

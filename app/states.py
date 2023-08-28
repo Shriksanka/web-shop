@@ -18,6 +18,8 @@ class AddSubgenre(StatesGroup):
     WaitingForSubgenreDescription = State()
     WaitingForSubgenrePhoto = State()
     WaitingForGenreChoice = State()
+    WaitingForQuantityAndPrice = State()
+    WaitingForPrice = State()
 
 
 class AddItem(StatesGroup):

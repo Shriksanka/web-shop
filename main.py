@@ -170,7 +170,7 @@ async def process_city_choice(callback_query: types.CallbackQuery, state: FSMCon
         data['city_id'] = callback_query.data
 
     await AddItem.next()
-    quantity_inline_menu = await kb.build_quantity_inline_menu()
+    quantity_inline_menu = await kb.build_quantities_inline_menu()
     await callback_query.answer('Выбери количество')
     await callback_query.message.edit_reply_markup(reply_markup=quantity_inline_menu)
 
@@ -257,46 +257,125 @@ async def process_genre_choice_view(callback_query: types.CallbackQuery, state: 
 @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith("view_subgenre_"),
                            state=ViewItem.WaitingForSubgenre)
 async def process_subgenre_choice_view(callback_query: types.CallbackQuery, state: FSMContext):
+    subgenre_id = callback_query.data.split("_")[2]
     async with state.proxy() as data:
-        data['subgenre_id'] = callback_query.data.split("_")[2]
+        data['subgenre_id'] = subgenre_id
 
-    await ViewItem.next()
-
-    subgenre_card = await db.get_subgenre_by_id(data['subgenre_id'])
-    await callback_query.message.answer_photo(photo=subgenre_card[3])
-    await callback_query.message.answer(f"Имя: {subgenre_card[1]}")
-    await callback_query.message.answer(f"Описание: {subgenre_card[2]}")
-
-    available_quantities = await db.get_available_quantities_by_subgenre_genre_and_city(data['subgenre_id'],
-                                                                                        data['genre_id'],
-                                                                                        data['city_id'])
-    quantity_inline_menu = InlineKeyboardMarkup(row_width=2)
-    for quantity in available_quantities:
-        quantity_inline_menu.insert(
-            InlineKeyboardButton(quantity[1], callback_data=f"view_quantity_{quantity[0]}")
-        )
-
-    await callback_query.answer("Выберите количество")
+    quantity_inline_menu = await kb.build_quantity_inline_menu(subgenre_id)
     await callback_query.message.edit_reply_markup(reply_markup=quantity_inline_menu)
+    await callback_query.answer("Выберите количество")
+    await ViewItem.WaitingForQuantity.set()
+
+
+# @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith("view_subgenre_"),
+#                            state=ViewItem.WaitingForSubgenre)
+# async def process_subgenre_choice_view(callback_query: types.CallbackQuery, state: FSMContext):
+#     async with state.proxy() as data:
+#         data['subgenre_id'] = callback_query.data.split("_")[2]
+#
+#     await ViewItem.next()
+#
+#     subgenre_card = await db.get_subgenre_by_id(data['subgenre_id'])
+#     await callback_query.message.answer_photo(photo=subgenre_card[3])
+#     await callback_query.message.answer(f"Имя: {subgenre_card[1]}")
+#     await callback_query.message.answer(f"Описание: {subgenre_card[2]}")
+#
+#     available_quantities = await db.get_available_quantities_by_subgenre_genre_and_city(data['subgenre_id'],
+#                                                                                         data['genre_id'],
+#                                                                                         data['city_id'])
+#     quantity_inline_menu = InlineKeyboardMarkup(row_width=2)
+#     for quantity in available_quantities:
+#         quantity_inline_menu.insert(
+#             InlineKeyboardButton(quantity[1], callback_data=f"view_quantity_{quantity[0]}")
+#         )
+#
+#     await callback_query.answer("Выберите количество")
+#     await callback_query.message.edit_reply_markup(reply_markup=quantity_inline_menu)
 
 
 @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith("view_quantity_"),
                            state=ViewItem.WaitingForQuantity)
 async def process_quantity_choice_view(callback_query: types.CallbackQuery, state: FSMContext):
+    subgenre_id = callback_query.data.split("_")[1]
+    quantity_id = callback_query.data.split("_")[2]
     async with state.proxy() as data:
-        data['quantity_id'] = callback_query.data.split("_")[2]
+        data['quantity_id'] = quantity_id
 
+    subgenre_price = await db.get_subgenre_price(subgenre_id, quantity_id)
     await ViewItem.next()
-    available_items = await db.get_items_by_params(data['city_id'], data['genre_id'], data['subgenre_id'],
-                                                   data['quantity_id'])
-    items_inline_menu = InlineKeyboardMarkup(row_width=2)
-    for item in available_items:
-        items_inline_menu.insert(
-            InlineKeyboardButton(f"Item ID: {item[0]} | UUID: {item[1]}",
-                                 callback_data=f"view_item_{item[0]}")
+
+    subgenre_card = await db.get_subgenre_by_id(subgenre_id)
+    await callback_query.message.answer_photo(photo=subgenre_card[3])
+    await callback_query.message.answer(f"Имя: {subgenre_card[1]}")
+    await callback_query.message.answer(f"Описание: {subgenre_card[2]}")
+    await callback_query.message.answer(f"Цена: {subgenre_price} (PLN)")
+
+
+@dp.callback_query_handler(text="add_price")
+async def admin_add_panel(callback_query: types.CallbackQuery):
+    subgenres = await db.get_all_subgenres()
+    subgenre_inline_menu = InlineKeyboardMarkup(row_width=1)
+    for subgenre in subgenres:
+        subgenre_id = subgenre[0]
+        subgenre_name = subgenre[1]
+        subgenre_inline_menu.insert(
+            InlineKeyboardButton(subgenre_name, callback_data=f"add_price_{subgenre_id}")
         )
-    await callback_query.answer("Выберите предмет из списка")
-    await callback_query.message.edit_reply_markup(reply_markup=items_inline_menu)
+    await callback_query.answer("Выберите поджанр, для которого хотите добавить цену")
+    await callback_query.message.edit_reply_markup(reply_markup=subgenre_inline_menu)
+
+
+@dp.callback_query_handler(lambda callback_query: callback_query.data.startswith("add_price_"))
+async def process_subgenre_for_price(callback_query: types.CallbackQuery):
+    subgenre_id = callback_query.data.split("_")[2]
+
+    async with state.proxy() as data:
+        data['subgenre_id_for_price'] = subgenre_id
+        await AddSubgenre.WaitingForQuantityAndPrice.set()
+
+    await callback_query.answer("Выберите количество и введите цену:")
+    quantity_inline_menu = await kb.build_quantity_inline_menu(subgenre_id)
+    await callback_query.message.edit_reply_markup(reply_markup=quantity_inline_menu)
+
+
+@dp.callback_query_handler(state=AddSubgenre.WaitingForQuantityAndPrice)
+async def process_quantity_and_price(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['quantity_id_for_price'] = callback_query.data
+
+    await AddSubgenre.next()
+    await callback_query.answer("Введите цену:")
+    await callback_query.message.edit_reply_markup(reply_markup=types.ReplyKeyboardRemove())
+    await AddSubgenre.WaitingForPrice.set()
+
+
+@dp.callback_query_handler(state=AddSubgenre.WaitingForPrice)
+async def process_price(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        subgenre_id = data['subgenre_id_for_price']
+        quantity_id = data['quantity_id_for_price']
+        price = message.text
+
+    await db.add_subgenre_price(subgenre_id, quantity_id, price)
+    await state.finish()
+    await message.reply("Цена успешно добавлена!")
+
+
+# async def process_quantity_choice_view(callback_query: types.CallbackQuery, state: FSMContext):
+#     async with state.proxy() as data:
+#         data['quantity_id'] = callback_query.data.split("_")[2]
+#
+#     await ViewItem.next()
+#     available_items = await db.get_items_by_params(data['city_id'], data['genre_id'], data['subgenre_id'],
+#                                                    data['quantity_id'])
+#     items_inline_menu = InlineKeyboardMarkup(row_width=2)
+#     for item in available_items:
+#         items_inline_menu.insert(
+#             InlineKeyboardButton(f"Item ID: {item[0]} | UUID: {item[1]}",
+#                                  callback_data=f"view_item_{item[0]}")
+#         )
+#     await callback_query.answer("Выберите предмет из списка")
+#     await callback_query.message.edit_reply_markup(reply_markup=items_inline_menu)
 
 
 @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith("view_item_"),

@@ -41,6 +41,11 @@ async def db_start():
                 "id SERIAL PRIMARY KEY, "
                 "id_cart INTEGER REFERENCES cart(cart_id), "
                 "id_item INTEGER REFERENCES items(item_id))")
+    cur.execute("CREATE TABLE IF NOT EXISTS subgenre_price ("
+                "id SERIAL PRIMARY KEY, "
+                "id_subgenre INTEGER REFERENCES subgenre(subgenre_id), "
+                "id_quantity INTEGER REFERENCES quantity(quantity_id), "
+                "price DECIMAL)")
 
     conn.commit()
 
@@ -177,3 +182,20 @@ async def get_items_by_params(city_id, genre_id, subgenre_id, quantity_id):
     )
     items = cur.fetchall()
     return items
+
+
+async def add_subgenre_price(subgenre_id, quantity_id, price):
+    cur.execute(
+        "INSERT INTO subgenre_price (id_subgenre, id_quantity, price) VALUES (%s, %s, %s)",
+        (subgenre_id, quantity_id, price)
+    )
+    conn.commit()
+
+
+async def get_subgenre_price(subgenre_id, quantity_id):
+    cur.execute(
+        "SELECT price FROM subgenre_price WHERE id_subgenre = %s AND id_quantity = %s",
+        (subgenre_id, quantity_id)
+    )
+    price = cur.fetchone()
+    return price[0] if price else None
