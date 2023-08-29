@@ -4,6 +4,7 @@ from app import database as db
 
 link_web = ReplyKeyboardMarkup()
 link_web.add(KeyboardButton('Открыть веб страницу', web_app=WebAppInfo(url='https://telegram-shop-web-app-7f96b757ecd0.herokuapp.com/')))
+link_web.add(KeyboardButton('Магазин'))
 
 link_web_with_admin = ReplyKeyboardMarkup()
 link_web_with_admin.add(

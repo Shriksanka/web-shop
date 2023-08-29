@@ -1,10 +1,11 @@
 import psycopg2
 import os
+import asyncpg
 
 
 async def db_start():
     global conn, cur
-    database_url = os.environ['DATABASE_URL']
+    database_url = 'postgres://ftyhkuqoayihkv:f1b845f3f3ac734ae92be9a551152d3b5ec264ff9ceee63c3b03b1149c27da21@ec2-54-83-138-228.compute-1.amazonaws.com:5432/dcaoogoipka0l4' # os.environ['DATABASE_URL']
     conn = psycopg2.connect(database_url)
     cur = conn.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS cart ("
@@ -46,6 +47,11 @@ async def db_start():
                 "id_subgenre INTEGER REFERENCES subgenre(subgenre_id), "
                 "id_quantity INTEGER REFERENCES quantity(quantity_id), "
                 "price DECIMAL)")
+    cur.execute("CREATE TABLE IF NOT EXISTS payment_addresses ("
+                "id SERIAL PRIMARY KEY, "
+                "id_subgenre INTEGER REFERENCES subgenre(subgenre_id), "
+                "id_quantity INTEGER REFERENCES quantity(quantity_id), "
+                "address TEXT)")
 
     conn.commit()
 
@@ -199,3 +205,11 @@ async def get_subgenre_price(subgenre_id, quantity_id):
     )
     price = cur.fetchone()
     return price[0] if price else None
+
+
+async def save_payment_address(subgenre_id, quantity_id, payment_address):
+    cur.execute(
+        "INSERT INTO payment_addresses (id_subgenre, id_quantity, address) VALUES (%s, %s, %s)",
+        (subgenre_id, quantity_id, payment_address)
+    )
+    conn.commit()

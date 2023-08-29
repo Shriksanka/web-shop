@@ -1,13 +1,18 @@
+import hashlib
+import time
+import hmac
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
-from app.states import AddCity, AddQuantity, AddGenre, AddSubgenre, AddItem, ViewItem
+from app.states import AddCity, AddQuantity, AddGenre, AddSubgenre, AddItem, ViewItem, AddPrice, ShopMenu
 from app import keyboards as kb
 from app import database as db
 from dotenv import load_dotenv
 import os
 import json
+import requests
+from urllib.parse import urlencode
 
 storage = MemoryStorage()
 load_dotenv()
@@ -326,30 +331,29 @@ async def admin_add_panel(callback_query: types.CallbackQuery):
 
 
 @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith("add_price_"))
-async def process_subgenre_for_price(callback_query: types.CallbackQuery):
+async def process_subgenre_for_price(callback_query: types.CallbackQuery, state: FSMContext):
     subgenre_id = callback_query.data.split("_")[2]
 
     async with state.proxy() as data:
         data['subgenre_id_for_price'] = subgenre_id
-        await AddSubgenre.WaitingForQuantityAndPrice.set()
+
+    await AddPrice.WaitingForQuantityAndPrice.set()
 
     await callback_query.answer("Выберите количество и введите цену:")
     quantity_inline_menu = await kb.build_quantity_inline_menu(subgenre_id)
     await callback_query.message.edit_reply_markup(reply_markup=quantity_inline_menu)
 
 
-@dp.callback_query_handler(state=AddSubgenre.WaitingForQuantityAndPrice)
+@dp.callback_query_handler(state=AddPrice.WaitingForQuantityAndPrice)
 async def process_quantity_and_price(callback_query: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
         data['quantity_id_for_price'] = callback_query.data
 
-    await AddSubgenre.next()
+    await AddPrice.WaitingForPrice.set()
     await callback_query.answer("Введите цену:")
-    await callback_query.message.edit_reply_markup(reply_markup=types.ReplyKeyboardRemove())
-    await AddSubgenre.WaitingForPrice.set()
 
 
-@dp.callback_query_handler(state=AddSubgenre.WaitingForPrice)
+@dp.message_handler(state=AddPrice.WaitingForPrice)
 async def process_price(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         subgenre_id = data['subgenre_id_for_price']
@@ -387,6 +391,146 @@ async def process_item_choice_view(callback_query: types.CallbackQuery, state: F
     await callback_query.message.answer_photo(photo=item[2])
     await callback_query.message.answer(f"Location: {item[3]}")
     await callback_query.answer('Просмотрен предмет')
+
+    await state.finish()
+
+
+@dp.message_handler(lambda message: message.text == 'Магазин')
+async def shop_menu(message: types.Message):
+    cities_inline_menu = await kb.build_city_inline_menu()
+    await message.answer("Выберите город", reply_markup=cities_inline_menu)
+    await ShopMenu.WaitingForCity.set()
+
+
+@dp.callback_query_handler(state=ShopMenu.WaitingForCity)
+async def process_city_choice(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['city_id'] = callback_query.data
+
+    genres_inline_menu = await kb.build_genre_inline_menu()
+    await callback_query.answer("Выберите жанр")
+    await callback_query.message.edit_reply_markup(reply_markup=genres_inline_menu)
+    await ShopMenu.WaitingForGenre.set()
+
+
+@dp.callback_query_handler(state=ShopMenu.WaitingForGenre)
+async def process_genre_choice(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['genre_id'] = callback_query.data
+
+    subgnres_inline_menu = await kb.build_subgenre_inline_menu()
+    await callback_query.answer("Выберите поджанр")
+    await callback_query.message.edit_reply_markup(reply_markup=subgnres_inline_menu)
+    await ShopMenu.WaitingForSubgenre.set()
+
+
+@dp.callback_query_handler(state=ShopMenu.WaitingForSubgenre)
+async def process_subgenre_choice(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['subgenre_id'] = callback_query.data
+
+    # Получаем информацию о поджанре из базы данных
+    subgenre_info = await db.get_subgenre_by_id(data['subgenre_id'])
+
+    # Отправляем информацию о поджанре и его цене
+    await callback_query.message.answer_photo(photo=subgenre_info[3])
+    await callback_query.message.answer(f"Имя: {subgenre_info[1]}")
+    await callback_query.message.answer(f"Описание: {subgenre_info[2]}")
+
+    quantity_inline_menu = await kb.build_quantity_inline_menu(subgenre_info[0])  # Передаем ID поджанра
+    await callback_query.message.answer("Выберите количество", reply_markup=quantity_inline_menu)
+
+    await ShopMenu.WaitingForQuantity.set()
+
+
+BINANCE_API_URL = "https://api.binance.com/api/v3/ticker/price"
+BTC_TO_PLN_SYMBOL = "BTCPLN"
+
+
+def generate_unique_address():
+    timestamp = int(time.time() * 1000)
+
+    query_params = {
+        "timestamp": timestamp,
+        "recvWindow": 5000,
+        "coin": "BTC"
+    }
+
+    query_string = urlencode(query_params)
+
+    signature = hmac.new(os.getenv('API_SECRET').encode('utf-8'), query_string.encode('utf-8'), hashlib.sha256).hexdigest()
+
+    payload = {
+        "timestamp": timestamp,
+        "recvWindow": 5000,
+        "signature": signature,
+        "coin": "BTC"
+    }
+
+    response = requests.get("https://api.binance.com/sapi/v1/capital/deposit/address",
+                             params=payload, headers={"X-MBX-APIKEY": os.getenv('API_KEY')})
+
+    if response.status_code == 200:
+        address = response.json().get("address")
+        print("Address generated successfully:", address)
+    else:
+        print("Error generating address. Response:", response.text)
+        address = None
+
+    return address
+
+
+@dp.callback_query_handler(state=ShopMenu.WaitingForQuantity)
+async def process_quantity_choice(callback_query: types.CallbackQuery, state: FSMContext):
+    quantity_id = callback_query.data
+
+    async with state.proxy() as data:
+        subgenre_id = data['subgenre_id']
+        data['quantity_id'] = quantity_id
+
+    # Получаем цену для выбранного поджанра и количества
+    subgenre_price_pln = await db.get_subgenre_price(subgenre_id, quantity_id)
+
+    # Получаем текущий курс BTC к PLN с Binance API
+    response = requests.get(f"{BINANCE_API_URL}?symbol={BTC_TO_PLN_SYMBOL}")
+    btc_to_pln_price = float(response.json()["price"])
+
+    # Рассчитываем цену в BTC
+    subgenre_price_btc = float(subgenre_price_pln) / btc_to_pln_price
+
+    # Отправляем сообщение с ценой
+    message = (
+        f"Цена для данного Поджанра за Такое Количество: {subgenre_price_pln} PLN\n"
+        f"Цена в BTC по текущему курсу: {subgenre_price_btc:.8f} BTC"
+    )
+
+    # Создаем клавиатуру с кнопкой "Оплатить криптой"
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton("Оплатить криптой", callback_data="pay_with_crypto")]
+    ])
+
+    await callback_query.message.answer(message, reply_markup=keyboard)
+
+    await ShopMenu.WaitingForPaymentAddress.set()
+    async with state.proxy() as data:
+        data['subgenre_price_btc'] = subgenre_price_btc
+
+
+@dp.callback_query_handler(text="pay_with_crypto", state=ShopMenu.WaitingForPaymentAddress)
+async def generate_payment_address(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        subgenre_price_btc = data['subgenre_price_btc']
+        subgenre_id = data['subgenre_id']
+        quantity_id = data['quantity_id']
+
+    # Генерируем уникальный адрес для оплаты
+    payment_address = generate_unique_address()
+
+    # Сохраняем уникальный адрес в базе данных для проверки оплаты
+    await db.save_payment_address(subgenre_id, quantity_id, payment_address)
+
+    # Отправляем адрес пользователю
+    await callback_query.message.answer(f"Для оплаты в криптовалюте используйте следующий адрес:\n{payment_address}")
 
     await state.finish()
 
