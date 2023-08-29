@@ -22,6 +22,11 @@ admin_inline_menu.add(
     InlineKeyboardButton("Посмотреть карточку предмета", callback_data="view_item")
 )
 
+payment_check_button = InlineKeyboardMarkup(row_width=2)
+payment_check_button.add(
+    InlineKeyboardButton("Проверить оплату", callback_data="check_payment")
+)
+
 
 async def build_genre_inline_menu():
     genre_inline_menu = InlineKeyboardMarkup(row_width=2)

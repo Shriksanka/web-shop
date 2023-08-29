@@ -13,6 +13,7 @@ import os
 import json
 import requests
 from urllib.parse import urlencode
+from binance.client import Client
 
 storage = MemoryStorage()
 load_dotenv()
@@ -271,33 +272,6 @@ async def process_subgenre_choice_view(callback_query: types.CallbackQuery, stat
     await callback_query.answer("Выберите количество")
     await ViewItem.WaitingForQuantity.set()
 
-
-# @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith("view_subgenre_"),
-#                            state=ViewItem.WaitingForSubgenre)
-# async def process_subgenre_choice_view(callback_query: types.CallbackQuery, state: FSMContext):
-#     async with state.proxy() as data:
-#         data['subgenre_id'] = callback_query.data.split("_")[2]
-#
-#     await ViewItem.next()
-#
-#     subgenre_card = await db.get_subgenre_by_id(data['subgenre_id'])
-#     await callback_query.message.answer_photo(photo=subgenre_card[3])
-#     await callback_query.message.answer(f"Имя: {subgenre_card[1]}")
-#     await callback_query.message.answer(f"Описание: {subgenre_card[2]}")
-#
-#     available_quantities = await db.get_available_quantities_by_subgenre_genre_and_city(data['subgenre_id'],
-#                                                                                         data['genre_id'],
-#                                                                                         data['city_id'])
-#     quantity_inline_menu = InlineKeyboardMarkup(row_width=2)
-#     for quantity in available_quantities:
-#         quantity_inline_menu.insert(
-#             InlineKeyboardButton(quantity[1], callback_data=f"view_quantity_{quantity[0]}")
-#         )
-#
-#     await callback_query.answer("Выберите количество")
-#     await callback_query.message.edit_reply_markup(reply_markup=quantity_inline_menu)
-
-
 @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith("view_quantity_"),
                            state=ViewItem.WaitingForQuantity)
 async def process_quantity_choice_view(callback_query: types.CallbackQuery, state: FSMContext):
@@ -363,23 +337,6 @@ async def process_price(message: types.Message, state: FSMContext):
     await db.add_subgenre_price(subgenre_id, quantity_id, price)
     await state.finish()
     await message.reply("Цена успешно добавлена!")
-
-
-# async def process_quantity_choice_view(callback_query: types.CallbackQuery, state: FSMContext):
-#     async with state.proxy() as data:
-#         data['quantity_id'] = callback_query.data.split("_")[2]
-#
-#     await ViewItem.next()
-#     available_items = await db.get_items_by_params(data['city_id'], data['genre_id'], data['subgenre_id'],
-#                                                    data['quantity_id'])
-#     items_inline_menu = InlineKeyboardMarkup(row_width=2)
-#     for item in available_items:
-#         items_inline_menu.insert(
-#             InlineKeyboardButton(f"Item ID: {item[0]} | UUID: {item[1]}",
-#                                  callback_data=f"view_item_{item[0]}")
-#         )
-#     await callback_query.answer("Выберите предмет из списка")
-#     await callback_query.message.edit_reply_markup(reply_markup=items_inline_menu)
 
 
 @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith("view_item_"),
@@ -523,16 +480,51 @@ async def generate_payment_address(callback_query: types.CallbackQuery, state: F
         subgenre_id = data['subgenre_id']
         quantity_id = data['quantity_id']
 
-    # Генерируем уникальный адрес для оплаты
-    payment_address = generate_unique_address()
+        # Генерируем уникальный адрес для оплаты
+        payment_address = generate_unique_address()
+        data['payment_address'] = payment_address
 
     # Сохраняем уникальный адрес в базе данных для проверки оплаты
     await db.save_payment_address(subgenre_id, quantity_id, payment_address)
 
     # Отправляем адрес пользователю
-    await callback_query.message.answer(f"Для оплаты в криптовалюте используйте следующий адрес:\n{payment_address}")
+    await callback_query.message.answer(f"Для оплаты в криптовалюте используйте следующий адрес:\n{payment_address}", reply_markup=kb.payment_check_button)
 
     await state.finish()
+
+
+@dp.callback_query_handler(lambda query: query.data == "check_payment")
+async def check_payment(callback_query: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        expected_price = data['subgenre_price_btc']
+        payment_address = data['payment_address']
+
+    is_payment_successful = check_payment_status(payment_address, expected_price)
+
+    if is_payment_successful:
+        await bot.send_message(callback_query.from_user.id, "Оплата прошла успешно!")
+    else:
+        await bot.send_message(callback_query.from_user.id, "Оплата не была проведена или недостаточно средств.")
+
+
+def check_payment_status(payment_address, expected_price):
+    subgenre_price_btc = expected_price
+    try:
+        binance_api_key = os.getenv('API_KEY')
+        binance_api_secret = os.getenv('API_SECRET')
+        client = Client(api_key=binance_api_key, api_secret=binance_api_secret)
+
+        # Получение списка истории транзакций для указанного адреса кошелька
+        transactions = client.get_withdraw_history(asset='BTC', address=payment_address)
+
+        # Поиск транзакции, соответствующей ожидаемой сумме и другим данным
+        for tx in transactions:
+            if (float(tx['amount']) > subgenre_price_btc) and tx['status'] == 6:
+                return True
+        return False
+    except Exception as e:
+        print("Ошибка при проверке оплаты:", str(e))
+        return False
 
 
 if __name__ == '__main__':
